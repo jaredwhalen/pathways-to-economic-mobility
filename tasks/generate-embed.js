@@ -82,7 +82,7 @@ ${modulepreloadFiles.map((file) => `<link rel="modulepreload" href="${JSDELIVR_B
 <script>
 (function () {
 	const BASE_URL = "${JSDELIVR_BASE_URL}";
-	window.${configVar} = { base: BASE_URL };
+	window.${configVar} = { base: BASE_URL, assets: BASE_URL };
 
 	const container = document.getElementById("${EMBED_CONTAINER_ID}");
 

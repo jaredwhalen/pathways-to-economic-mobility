@@ -1,30 +1,7 @@
 /**
  * Public Agenda — Pathways to Economic Mobility
- * Brand fonts (self-hosted). Fallbacks loaded via Google Fonts in +layout.svelte.
+ * Brand fonts are injected via FontFaces.svelte so CDN embed base applies.
  */
-@font-face {
-	font-family: 'freight-display-pro';
-	src: url('/fonts/FeatureDisplay-Medium-Web.woff2') format('woff2');
-	font-weight: 500;
-	font-style: normal;
-	font-display: swap;
-}
-
-@font-face {
-	font-family: 'founders-grotesk';
-	src: url('/fonts/FoundersGrotesk-Regular.otf') format('opentype');
-	font-weight: 400;
-	font-style: normal;
-	font-display: swap;
-}
-
-@font-face {
-	font-family: 'founders-grotesk';
-	src: url('/fonts/founders-grotesk-semibold.woff2') format('woff2');
-	font-weight: 600;
-	font-style: normal;
-	font-display: swap;
-}
 
 /**
  * Scoped tokens for the embed. All story UI should live under .emcs-scroll

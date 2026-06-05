@@ -1,6 +1,10 @@
 <script>
+	import { assetUrl } from '$lib/utils/assetUrl.js';
+
 	/** @type {{ isActive?: boolean }} */
 	let { isActive = false } = $props();
+
+	const videoSrc = assetUrl('/video/background.mp4');
 
 	let videoEl = $state(/** @type {HTMLVideoElement | null} */ (null));
 
@@ -19,7 +23,7 @@
 	<video
 		bind:this={videoEl}
 		class="opening-video-media"
-		src="/video/background.mp4"
+		src={videoSrc}
 		muted
 		loop
 		playsinline

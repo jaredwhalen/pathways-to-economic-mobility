@@ -1,15 +1,16 @@
 <script>
 	import ReciprocalRegionDiagram from '$lib/components/charts/ReciprocalRegionDiagram.svelte';
 	import { REGION_NODES } from '$lib/utils/regionDiagramLayout.js';
+	import { assetUrl } from '$lib/utils/assetUrl.js';
 
 	const nodes = REGION_NODES.map((node) => ({
 		...node,
 		image:
 			node.id === 'campus'
-				? '/images/problem-campus.webp'
+				? assetUrl('/images/problem-campus.webp')
 				: node.id === 'community'
-					? '/images/community.webp'
-					: '/images/public-agenda-engagement.webp'
+					? assetUrl('/images/community.webp')
+					: assetUrl('/images/public-agenda-engagement.webp')
 	}));
 </script>
 

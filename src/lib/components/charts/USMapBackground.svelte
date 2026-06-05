@@ -10,6 +10,7 @@
 	import { popDot } from '$lib/utils/mapDot.js';
 	import { getSlideIndex } from '$lib/data/copy.js';
 	import { easeInOutCubic, lerp } from '$lib/utils/ease.js';
+	import { assetUrl } from '$lib/utils/assetUrl.js';
 
 	/** @type {{ slideId?: string }} */
 	let { slideId = 'regional-opportunity' } = $props();
@@ -24,8 +25,8 @@
 
 	/** Placeholder images — swap paths when final assets are ready */
 	const CASE_STUDY_PHOTOS = [
-		'/images/public-agenda-engagement.webp',
-		'/images/public-agenda-engagement.webp'
+		assetUrl('/images/public-agenda-engagement.webp'),
+		assetUrl('/images/public-agenda-engagement.webp')
 	];
 
 	const SOURCE = 'Source: CCIHE Opportunity College and Universities';

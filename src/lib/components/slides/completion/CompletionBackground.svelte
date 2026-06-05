@@ -1,4 +1,10 @@
-<div class="completion-photo" role="presentation"></div>
+<script>
+	import { assetUrl } from '$lib/utils/assetUrl.js';
+
+	const photoUrl = assetUrl('/images/completion-uc-merced-graduation.webp');
+</script>
+
+<div class="completion-photo" style={`--photo-url: url('${photoUrl}')`} role="presentation"></div>
 
 <style>
 	.completion-photo {
@@ -21,7 +27,7 @@
 				rgba(25, 31, 47, 0.45) 55%,
 				rgba(3, 31, 67, 0.82) 100%
 			),
-			url('/images/completion-uc-merced-graduation.webp');
+			var(--photo-url);
 		background-size: cover;
 		background-position: center 35%;
 		background-repeat: no-repeat;

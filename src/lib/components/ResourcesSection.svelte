@@ -5,6 +5,7 @@
 	import { formatSlideParagraph } from '$lib/utils/parseSlideText.js';
 	import ResourcePathway from '$lib/components/ResourcePathway.svelte';
 	import { revealOnScroll } from '$lib/actions/revealOnScroll.js';
+	import { assetUrl } from '$lib/utils/assetUrl.js';
 	import { dev } from '$app/environment';
 
 	let introHtml = $derived(formatSlideParagraph(resourcesIntro));
@@ -106,7 +107,7 @@
 							rel={dev ? 'noopener noreferrer' : undefined}
 						>
 							<div class="resource-media">
-								<img src={resource.thumbnail} alt="" loading="lazy" decoding="async" />
+								<img src={assetUrl(resource.thumbnail)} alt="" loading="lazy" decoding="async" />
 							</div>
 							<div class="resource-body">
 								<h3 class="resource-title">{resource.title}</h3>

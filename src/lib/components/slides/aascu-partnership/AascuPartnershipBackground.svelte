@@ -1,4 +1,14 @@
-<div class="aascu-partnership-photo" role="presentation"></div>
+<script>
+	import { assetUrl } from '$lib/utils/assetUrl.js';
+
+	const photoUrl = assetUrl('/images/aascu-cohort-chicago.webp');
+</script>
+
+<div
+	class="aascu-partnership-photo"
+	style={`--photo-url: url('${photoUrl}')`}
+	role="presentation"
+></div>
 
 <style>
 	.aascu-partnership-photo {
@@ -21,7 +31,7 @@
 				rgba(25, 31, 47, 0.45) 55%,
 				rgba(3, 31, 67, 0.82) 100%
 			),
-			url('/images/aascu-cohort-chicago.webp');
+			var(--photo-url);
 		background-size: cover;
 		background-position: center center;
 		background-repeat: no-repeat;

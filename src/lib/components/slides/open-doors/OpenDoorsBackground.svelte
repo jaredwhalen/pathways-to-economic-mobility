@@ -1,4 +1,10 @@
-<div class="open-doors-photo" role="presentation"></div>
+<script>
+	import { assetUrl } from '$lib/utils/assetUrl.js';
+
+	const photoUrl = assetUrl('/images/community.webp');
+</script>
+
+<div class="open-doors-photo" style={`--photo-url: url('${photoUrl}')`} role="presentation"></div>
 
 <style>
 	.open-doors-photo {
@@ -21,7 +27,7 @@
 				rgba(25, 31, 47, 0.45) 55%,
 				rgba(3, 31, 67, 0.82) 100%
 			),
-			url('/images/community.webp');
+			var(--photo-url);
 		background-size: cover;
 		background-position: center center;
 		background-repeat: no-repeat;

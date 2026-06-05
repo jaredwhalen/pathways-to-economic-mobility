@@ -1,6 +1,7 @@
 <script>
 	import { slides } from '$lib/data/copy.js';
 	import '$lib/styles/emcs.css';
+	import FontFaces from '$lib/components/FontFaces.svelte';
 	import Scroller from '$lib/components/Scroller.svelte';
 	import Slide from '$lib/components/Slide.svelte';
 	import Background from '$lib/components/Background.svelte';
@@ -16,6 +17,8 @@
 
 	let activeSlideId = $derived(slides[index]?.id ?? '');
 </script>
+
+<FontFaces />
 
 <div class="emcs-scroll theme-light">
 	<Scroller bind:index bind:count bind:progress bind:offset bind:visible>
