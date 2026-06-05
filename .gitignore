@@ -7,10 +7,6 @@ node_modules
 .wrangler
 /.svelte-kit
 /build
-/dist
-
-# Auto-generated embed files (keep dist/ for GitHub hosting)
-wordpress-embed.html
 
 # OS
 .DS_Store

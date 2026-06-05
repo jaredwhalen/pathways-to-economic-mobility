@@ -2,12 +2,13 @@
 
 const project = {
 	meta: {
-		title: 'YOUR_DISPLAY_TITLE', // <title> (npm run setup)
-		description: "YOUR_META_DESCRIPTION", // meta description (npm run setup)
+		title: 'Pathways to Economic Mobility',
+		description:
+			'An interactive story on economic mobility, higher education access, and Public Agenda research.'
 	},
 
 	document: {
-		mode: 'standalone', // 'standalone' | 'inline' — inline skips Google Fonts (host owns typography)
+		mode: 'inline', // WordPress host owns typography; standalone loads Google Fonts in layout
 		includeViewportMeta: true,
 		includeGoogleFonts: true, // only when mode is standalone
 		googleFontHref:
@@ -21,7 +22,8 @@ const project = {
 	},
 
 	build: {
-		cdnBaseUrl: 'https://cdn.jsdelivr.net/gh/YOUR_GITHUB_ORG/YOUR_GITHUB_REPO@main/dist/', // published dist/ base; used by tasks/generate-embed.js (npm run setup)
+		cdnBaseUrl:
+			'https://cdn.jsdelivr.net/gh/jaredwhalen/pathways-to-economic-mobility@main/dist/',
 		embedContainerId: 'svelte-app-container' // DOM id for the WordPress embed mount node
 	}
 };

@@ -1,0 +1,55 @@
+<!-- WordPress embed bundle (see src/lib/config/project.config.js → build) -->
+<!--
+1. npm run build:embed
+2. Commit and push the dist/ folder (or your CDN source)
+3. Paste this block into a Custom HTML block
+
+CDN base: https://cdn.jsdelivr.net/gh/jaredwhalen/pathways-to-economic-mobility@main/dist/
+-->
+
+<link href="https://cdn.jsdelivr.net/gh/jaredwhalen/pathways-to-economic-mobility@main/dist/_app/immutable/assets/0.DHWSoPZM.css" rel="stylesheet">
+
+<link rel="modulepreload" href="https://cdn.jsdelivr.net/gh/jaredwhalen/pathways-to-economic-mobility@main/dist/_app/immutable/entry/start.CaN9YBV9.js">
+<link rel="modulepreload" href="https://cdn.jsdelivr.net/gh/jaredwhalen/pathways-to-economic-mobility@main/dist/_app/immutable/chunks/DlkVEooO.js">
+<link rel="modulepreload" href="https://cdn.jsdelivr.net/gh/jaredwhalen/pathways-to-economic-mobility@main/dist/_app/immutable/chunks/Dvfatc2Z.js">
+<link rel="modulepreload" href="https://cdn.jsdelivr.net/gh/jaredwhalen/pathways-to-economic-mobility@main/dist/_app/immutable/chunks/Ddw5wEg3.js">
+<link rel="modulepreload" href="https://cdn.jsdelivr.net/gh/jaredwhalen/pathways-to-economic-mobility@main/dist/_app/immutable/entry/app.C5LV30mQ.js">
+<link rel="modulepreload" href="https://cdn.jsdelivr.net/gh/jaredwhalen/pathways-to-economic-mobility@main/dist/_app/immutable/chunks/CfBwVa13.js">
+<link rel="modulepreload" href="https://cdn.jsdelivr.net/gh/jaredwhalen/pathways-to-economic-mobility@main/dist/_app/immutable/chunks/G4wz2zg7.js">
+<link rel="modulepreload" href="https://cdn.jsdelivr.net/gh/jaredwhalen/pathways-to-economic-mobility@main/dist/_app/immutable/chunks/1OKJYend.js">
+<link rel="modulepreload" href="https://cdn.jsdelivr.net/gh/jaredwhalen/pathways-to-economic-mobility@main/dist/_app/immutable/chunks/Cqs3ih9t.js">
+<link rel="modulepreload" href="https://cdn.jsdelivr.net/gh/jaredwhalen/pathways-to-economic-mobility@main/dist/_app/immutable/nodes/0.Cn-Lgras.js">
+<link rel="modulepreload" href="https://cdn.jsdelivr.net/gh/jaredwhalen/pathways-to-economic-mobility@main/dist/_app/immutable/chunks/C2Rr6YUy.js">
+<link rel="modulepreload" href="https://cdn.jsdelivr.net/gh/jaredwhalen/pathways-to-economic-mobility@main/dist/_app/immutable/nodes/2.Sk80oMCS.js">
+
+<div id="svelte-app-container" style="width:100%;box-sizing:border-box;padding-inline:0">
+	<div class="demo svelte-vfho01">
+		<p>Loading…</p>
+	</div>
+</div>
+
+<script>
+(function () {
+	const BASE_URL = "https://cdn.jsdelivr.net/gh/jaredwhalen/pathways-to-economic-mobility@main/dist/";
+	window.__sveltekit_4k45iz = { base: BASE_URL };
+
+	const container = document.getElementById("svelte-app-container");
+
+	Promise.all([
+		import(BASE_URL + '_app/immutable/entry/start.CaN9YBV9.js'),
+		import(BASE_URL + '_app/immutable/entry/app.C5LV30mQ.js')
+	])
+		.then(([kit, app]) => {
+			kit.start(app, container, {
+				node_ids: [0, 2],
+				data: [null, null],
+				form: null,
+				error: null
+			});
+		})
+		.catch((error) => {
+			console.error('Svelte app failed to load:', error);
+			container.innerHTML = '<p>Error loading app. Check the CDN URL in src/lib/config/project.config.js and that dist/ is published.</p>';
+		});
+})();
+</script>
