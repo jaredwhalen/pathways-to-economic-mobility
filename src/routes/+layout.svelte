@@ -53,7 +53,7 @@
 
 	:global(html, body) {
 		margin: 0;
-		background: var(--color-gray-50);
+		background: #f3f3f3;
 		color: var(--color-text);
 	}
 </style>

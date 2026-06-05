@@ -1,16 +1,63 @@
 {
-	"scroller": [
+	"slides": [
 		{
-			"id": "slide_0",
-			"text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.\n\nDonec id elit non mi porta gravida at eget metus."
+			"id": "opening",
+			"background": "opening",
+			"text": "Economic well-being is at the heart of Americans' confidence in higher education. A college degree is a strong foundation for upward mobility, but all Americans do not have the same access to higher education and its economic benefits."
 		},
 		{
-			"id": "slide_1",
-			"text": "Aenean lacinia bibendum nulla sed consectetur. Maecenas faucibus mollis interdum.\n\nVestibulum id ligula porta felis euismod semper."
+			"id": "opening-trust",
+			"background": "opening",
+			"text": "This [[orange]]undermines trust[[/]] in the commitment and capacity of higher education to improve the lives of all Americans. When citizens in a democracy feel that the system is rigged, they won't stand up for that democracy.",
+			"showChart": true
 		},
 		{
-			"id": "slide_2",
-			"text": "Curabitur blandit tempus porttitor. Etiam porta sem malesuada magna mollis euismod."
+			"id": "college-cost",
+			"background": "mobility-chart",
+			"text": "Higher education institutions have tried to create fairness by charging low-income students less for college."
+		},
+		{
+			"id": "earnings-inequality",
+			"background": "mobility-chart",
+			"text": "However, differences in earnings reflect differences in family income. We open the front door, but students walk back into inequality on the way out."
+		},
+		{
+			"id": "regional-opportunity",
+			"background": "map",
+			"text": "The good news is that [[teal]]many colleges and universities[[/]] are doing exceptional work opening their doors to students with low incomes and setting these students on a path to earning competitive wages. However, learners in [[region-gray]]some states and regions[[/]] do not have a high-performing school nearby. Because most students attend a local institution, every college and university should advance economic mobility."
+		},
+		{
+			"id": "public-agenda",
+			"background": "map",
+			"text": "Enter [[teal]]Public Agenda[[/]]. Drawing on our quantitative analyses of nationwide institutional data and conversations with hundreds of administrators, faculty, staff, and students at high-performing colleges and universities, [[teal]]Public Agenda[[/]] has identified a set of practices that promote positive economic outcomes for students from families with low incomes."
+		},
+		{
+			"id": "open-doors",
+			"background": "open-doors",
+			"text": "Colleges and universities open their doors to students from low-income families when they reduce or eliminate costs for low-income students and welcome families into the recruitment process."
+		},
+		{
+			"id": "completion",
+			"background": "completion",
+			"text": "Completion rate is a near-universal success metric—and a predictor of positive economic outcomes. High performing colleges and universities stand out in the ways that they align student support, advising, and data-use with the best evidence-based practices for driving success for students from low-income families."
+		},
+		{
+			"id": "regional-reciprocity",
+			"background": "regional-reciprocity",
+			"text": "[[campus]]Building reciprocal relationships[[/]] with [[community]]community stakeholders[[/]], and investing in a [[economy]]regional economy[[/]] where graduates can find good-paying jobs are fundamental to achieving a vision of regional well-being."
+		},
+		{
+			"id": "culture-of-success",
+			"background": "culture-of-success",
+			"text": "Positive outcomes are rooted in a unified culture of success across campus. This can be mandated by [[leadership]]leadership with vision[[/]]—or bubble up from the base through responsive [[frontline-staff]]frontline staff[[/]]."
+		},
+		{
+			"id": "aascu-partnership",
+			"background": "aascu-partnership",
+			"text": "Public Agenda put these findings to work in partnership with AASCU, a network of regional public colleges and universities serving the communities… and Campus Compact.\n\n15 faculty members at AASCU institutions participated in the Engaged Civic Learning and Economic Mobility Project cohort to reimagine community engaged learning courses as resources for economic mobility—for both current students and community members."
 		}
-	]
+	],
+	"resources": {
+		"intro": "We've taken everything we've learned from dozens of case studies, quantitative analysis, and more to create this toolkit for institutional leaders, legislators, front-line staff, and advocates. Here, you'll find evidence-backed, actionable strategies to provide the best outcomes for students from low-income backgrounds."
+	}
 }

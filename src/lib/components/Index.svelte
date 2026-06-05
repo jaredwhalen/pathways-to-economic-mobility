@@ -1,109 +1,45 @@
 <script>
-    import Scroller from "./Scroller.svelte";
-    import Slide from "./Slide.svelte";
-    import copy from "../data/copy.json";
-    import Window from "./Window.svelte";
-    import Background from "./Background.svelte";
+	import { slides } from '$lib/data/copy.js';
+	import '$lib/styles/emcs.css';
+	import Scroller from '$lib/components/Scroller.svelte';
+	import Slide from '$lib/components/Slide.svelte';
+	import Background from '$lib/components/Background.svelte';
+	import ScrollerDebug from '$lib/components/ScrollerDebug.svelte';
+	import ResourcesSection from '$lib/components/ResourcesSection.svelte';
+	import { dev } from '$app/environment';
 
-    import { windowWidth, windowHeight } from "../stores/global.js";
+	let index = $state(0);
+	let count = $state(0);
+	let progress = $state(0);
+	let offset = $state(0);
+	let visible = $state(false);
 
-    let count = $state();
-    let index = $state();
-    let offset = $state();
-    let progress = $state();
-    let top = $state(0);
-    let threshold = $state(0.5);
-    let bottom = $state(1);
-
-    // Get slides from copy data
-    let slides = copy.scroller;
-
-    let viz = $state(null);
-
-    let containerWidth = $state(0);
-    let leftOffset = $state(0);
-    let debounceTimer = null;
-
-    // Debounced function to calculate offsets
-    function calculateOffsets() {
-        if (debounceTimer) {
-            clearTimeout(debounceTimer);
-        }
-        debounceTimer = setTimeout(() => {
-            if ($windowWidth && viz) {
-                containerWidth = viz.getBoundingClientRect().width;
-                leftOffset = ($windowWidth - containerWidth) / -2;
-            }
-        }, 150); // 150ms debounce
-    }
-
-    // Effect that only runs on mount and width changes
-    $effect(() => {
-        if ($windowWidth) {
-            calculateOffsets();
-        }
-    });
-
-    // Cleanup debounce timer on component destroy
-    $effect(() => {
-        return () => {
-            if (debounceTimer) {
-                clearTimeout(debounceTimer);
-            }
-        };
-    });
-
+	let activeSlideId = $derived(slides[index]?.id ?? '');
 </script>
 
-<Window />
+<div class="emcs-scroll theme-light">
+	<Scroller bind:index bind:count bind:progress bind:offset bind:visible>
+		<div slot="background" class="scroller-background-slot">
+			<Background slideId={activeSlideId} slideCount={count} slideOffset={offset} />
+		</div>
+		<div slot="foreground">
+			{#each slides as slide (slide.id)}
+				<Slide {slide} isActive={activeSlideId === slide.id} />
+			{/each}
+		</div>
+	</Scroller>
 
-<div id="viz" class="viz-root" bind:this={viz} style:--left-offset="{leftOffset}px">
-    <Scroller
-        {top}
-        {threshold}
-        {bottom}
-        bind:count
-        bind:index
-        bind:offset
-        bind:progress
-    >
-        {#snippet background()}
-            <Background slideIndex={index} slideCount={count} />
-        {/snippet}
+	<ResourcesSection />
 
-        {#snippet foreground()}
-            <div class="foreground-content">
-                {#each slides as slide, i}
-                    <Slide {slide} isActive={i === index} />
-                {/each}
-            </div>
-        {/snippet}
-    </Scroller>
+	{#if dev}
+		<ScrollerDebug {index} {count} {progress} {offset} {visible} />
+	{/if}
 </div>
 
 <style>
-    :global(body) {
-        margin: 0;
-    }
-
-    .viz-root {
-        width: 100%;
-    }
-
-    .foreground-content {
-        width: 100%;
-    }
-
-    :global(svelte-scroller-background) {
-        overflow: hidden;
-        height: 100dvh;
-    }
-
-    :global(svelte-scroller-foreground) {
-        pointer-events: none;
-    }
-
-    :global(svelte-scroller-foreground .slide) {
-        pointer-events: all;
-    }
+	:global(.scroller-background-slot) {
+		width: 100%;
+		height: 100dvh;
+		min-height: 100dvh;
+	}
 </style>

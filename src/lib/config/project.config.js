@@ -11,13 +11,13 @@ const project = {
 		includeViewportMeta: true,
 		includeGoogleFonts: true, // only when mode is standalone
 		googleFontHref:
-			'https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&display=swap'
+			'https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,700;1,400&family=Roboto:ital,wght@0,300;0,400;1,300&display=swap'
 	},
 
 	layout: {
 		mode: 'full', // 'column' | 'full' — column: max-width + flush start; full: no max-width on app root
 		maxWidthPx: 800, // used when mode is 'column'
-		horizontalPadding: '1rem' // CSS length; use '0' for flush edges in full layout
+		horizontalPadding: '0'
 	},
 
 	build: {

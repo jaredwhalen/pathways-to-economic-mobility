@@ -203,10 +203,9 @@
 		display: block;
 		position: relative;
 		width: 100%;
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
 		height: 100dvh;
+		min-height: 100dvh;
+		overflow: hidden;
 	}
 
 	svelte-scroller-foreground {

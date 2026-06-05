@@ -1,4 +1,4 @@
-# YOUR_DISPLAY_TITLE
+# Pathways To Economic Mobility
 
 A minimal [SvelteKit](https://kit.svelte.dev/) + Svelte 5 template for embeds and stories. Output is static HTML (`adapter-static`) so you can host it anywhere or drop a generated snippet into WordPress (or another CMS) via a CDN.
 

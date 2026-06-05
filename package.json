@@ -1,5 +1,5 @@
 {
-	"name": "your-story-slug",
+	"name": "pathways-to-economic-mobility",
 	"private": true,
 	"version": "0.0.1",
 	"type": "module",
@@ -26,6 +26,7 @@
 		"chaikin-smooth": "^1.0.4",
 		"change-case": "^5.4.4",
 		"d3": "^7.9.0",
+		"gsap": "^3.15.0",
 		"lodash.debounce": "^4.0.8",
 		"mapbox-gl": "^3.15.0",
 		"sass": "^1.93.2",

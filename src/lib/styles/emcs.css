@@ -1,0 +1,157 @@
+/**
+ * Public Agenda — Pathways to Economic Mobility
+ * Brand fonts (self-hosted). Fallbacks loaded via Google Fonts in +layout.svelte.
+ */
+@font-face {
+	font-family: 'freight-display-pro';
+	src: url('/fonts/FeatureDisplay-Medium-Web.woff2') format('woff2');
+	font-weight: 500;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'founders-grotesk';
+	src: url('/fonts/FoundersGrotesk-Regular.otf') format('opentype');
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'founders-grotesk';
+	src: url('/fonts/founders-grotesk-semibold.woff2') format('woff2');
+	font-weight: 600;
+	font-style: normal;
+	font-display: swap;
+}
+
+/**
+ * Scoped tokens for the embed. All story UI should live under .emcs-scroll
+ * so host-page styles (WordPress / Elementor) do not conflict.
+ */
+.emcs-scroll {
+	/* Brand colors */
+	--color-teal: #318793;
+	--color-teal-dark: #19444A;
+	--color-teal-light: #98c3c9;
+	--color-teal-pale: #9cd4eb;
+	--color-navy-deep: #031f43;
+	--color-navy: #191f2f;
+	--color-near-black: #171717;
+	--color-white: #ffffff;
+	--color-off-white: #f3f3f3;
+	--map-state-fill: #eef4f5;
+	--map-state-empty: #f4f1f1;
+	--color-region-gray: #6d7a80;
+
+	/* Section background themes (applied per background layer) */
+	--section-bg-light: var(--color-white);
+	--section-bg-dark: var(--color-teal-dark);
+	--color-red: #ff6364;
+	--color-orange: #de6a40;
+	--color-yellow: #f9cb6c;
+	--color-yellow-dark: #ce972a;
+	--color-green: #5bb785;
+	--color-blue: #38aad6;
+	--color-purple: #b34cdb;
+
+	/* Finding accents */
+	--finding-01: var(--color-orange);
+	--finding-02: var(--color-green);
+	--finding-03: var(--color-blue);
+	--finding-04: var(--color-purple);
+
+	/* Typography */
+	--font-display: 'freight-display-pro', 'Merriweather', Georgia, serif;
+	--font-body: 'founders-grotesk', 'Roboto', system-ui, sans-serif;
+	--font-weight-light: 300;
+	--font-weight-regular: 400;
+	--font-weight-bold: 700;
+
+	/* Layout */
+	--content-max-width: 1280px;
+	--content-padding: 80px;
+
+	/* Defaults */
+	font-family: var(--font-body);
+	font-weight: var(--font-weight-light);
+	line-height: 1.7;
+	color: var(--color-navy);
+	box-sizing: border-box;
+	width: 100%;
+}
+
+.emcs-scroll *,
+.emcs-scroll *::before,
+.emcs-scroll *::after {
+	box-sizing: border-box;
+}
+
+.emcs-scroll .emcs-content {
+	width: 100%;
+	max-width: var(--content-max-width);
+	margin-inline: auto;
+	padding-inline: var(--content-padding);
+}
+
+/* —— Typography —— */
+
+.emcs-scroll :is(h1, h2, h3, .text-display) {
+	font-family: var(--font-display);
+	font-weight: var(--font-weight-regular);
+	line-height: 1.3;
+	color: inherit;
+}
+
+.emcs-scroll :is(h1, h2, h3, .text-display).bold,
+.emcs-scroll :is(h1, h2, h3).bold {
+	font-weight: var(--font-weight-bold);
+}
+
+.emcs-scroll :is(p, li, .text-body) {
+	font-family: var(--font-body);
+	font-weight: var(--font-weight-light);
+	line-height: 1.7;
+}
+
+.emcs-scroll .text-body-regular {
+	font-weight: var(--font-weight-regular);
+}
+
+.emcs-scroll .text-label {
+	font-family: var(--font-body);
+	font-weight: var(--font-weight-light);
+	font-size: 0.75rem;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--color-teal);
+}
+
+/* —— Section background themes —— */
+
+.emcs-scroll :global(.section-theme-light) {
+	background-color: var(--section-bg-light);
+}
+
+.emcs-scroll :global(.section-theme-dark) {
+	background-color: var(--section-bg-dark);
+}
+
+/* —— Theme surfaces —— */
+
+.emcs-scroll.theme-dark {
+	color: var(--color-white);
+}
+
+.emcs-scroll.theme-light {
+	color: var(--color-navy);
+	--slide-surface-bg: var(--color-white);
+	--slide-surface-shadow: 0 4px 32px rgba(0, 0, 0, 0.28);
+}
+
+@media (max-width: 768px) {
+	.emcs-scroll {
+		--content-padding: 24px;
+	}
+}
