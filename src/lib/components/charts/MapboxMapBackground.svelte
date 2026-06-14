@@ -9,6 +9,7 @@
 		addCaseStudySiteLayer,
 		setSiteLayerEnterProgress,
 		setSiteLayerFade,
+		stabilizeGlobeFlightLayers,
 		MONO,
 	} from "$lib/utils/mapboxStyle.js";
 	import {
@@ -158,22 +159,14 @@
 
 		for (const id of ["opportunity-sites-circle"]) {
 			if (!map.getLayer(id)) continue;
-			map.setLayoutProperty(
-				id,
-				"visibility",
-				oppOpacity > 0 ? "visible" : "none",
-			);
+			map.setLayoutProperty(id, "visibility", "visible");
 			if (opportunityEntering)
 				setSiteLayerEnterProgress(map, id, oppOpacity, OPPORTUNITY_DOT);
 			else setSiteLayerFade(map, id, oppOpacity, OPPORTUNITY_DOT);
 		}
 		for (const id of ["case-study-sites-ring", "case-study-sites-dot"]) {
 			if (!map.getLayer(id)) continue;
-			map.setLayoutProperty(
-				id,
-				"visibility",
-				caseOpacity > 0 ? "visible" : "none",
-			);
+			map.setLayoutProperty(id, "visibility", "visible");
 			setSiteLayerFade(
 				map,
 				id,
@@ -216,6 +209,7 @@
 
 		instance.on("style.load", () => {
 			applyGlobeFog(instance);
+			stabilizeGlobeFlightLayers(instance);
 			addSiteLayer(
 				instance,
 				"opportunity-sites",

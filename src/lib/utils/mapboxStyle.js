@@ -111,6 +111,30 @@ export function addStateLayers(map, statesGeo) {
 // and causes dots to flash at full opacity before the first explicit set.
 const ZERO_TRANSITION = { duration: 0, delay: 0 };
 
+const GLOBE_CIRCLE_PAINT = {
+	'circle-pitch-alignment': 'map',
+	'circle-pitch-scale': 'map'
+};
+
+const CUSTOM_GEOJSON_SOURCES = new Set(['opportunity-sites', 'case-study-sites']);
+
+export function stabilizeGlobeFlightLayers(map) {
+	map.setTerrain(null);
+
+	const style = map.getStyle();
+	if (!style?.layers) return;
+
+	for (const layer of style.layers) {
+		if (layer.source && CUSTOM_GEOJSON_SOURCES.has(layer.source)) continue;
+
+		try {
+			map.setLayerZoomRange(layer.id, 0, 24);
+		} catch {
+			// Some layers do not support zoom-range changes.
+		}
+	}
+}
+
 export function addSiteLayer(map, sourceId, geojson, options = {}) {
 	const { circleColor = MONO.teal } = options;
 
@@ -135,6 +159,7 @@ export function addSiteLayer(map, sourceId, geojson, options = {}) {
 			'circle-stroke-color': '#ffffff',
 			'circle-stroke-width': 0,
 			'circle-stroke-opacity': 0,
+			...GLOBE_CIRCLE_PAINT,
 			'circle-opacity-transition': ZERO_TRANSITION,
 			'circle-radius-transition': ZERO_TRANSITION,
 			'circle-stroke-width-transition': ZERO_TRANSITION,
@@ -249,6 +274,7 @@ export function addCaseStudySiteLayer(map, sourceId, geojson) {
 			'circle-stroke-width': 0,
 			'circle-opacity': 0,
 			'circle-stroke-opacity': 0,
+			...GLOBE_CIRCLE_PAINT,
 			'circle-opacity-transition': ZERO_TRANSITION,
 			'circle-radius-transition': ZERO_TRANSITION,
 			'circle-stroke-width-transition': ZERO_TRANSITION,
@@ -267,6 +293,7 @@ export function addCaseStudySiteLayer(map, sourceId, geojson) {
 			'circle-stroke-width': 0,
 			'circle-opacity': 0,
 			'circle-stroke-opacity': 0,
+			...GLOBE_CIRCLE_PAINT,
 			'circle-opacity-transition': ZERO_TRANSITION,
 			'circle-radius-transition': ZERO_TRANSITION,
 			'circle-stroke-width-transition': ZERO_TRANSITION,

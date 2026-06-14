@@ -9,9 +9,8 @@ const TOUR_HOLD_MS = 500;
 const TOUR_INTRO_MS = 1600;
 const TOUR_PRE_DELAY = 600;
 const SITE_ZOOM = 7;
-// flyTo arc intensity: higher = the camera zooms further out mid-flight.
-// Mapbox default is 1.42.
-const FLY_CURVE = 1.55;
+// Regional flyTo arc: enough lift for long legs without the label-flicker dip of ~1.55.
+const FLY_CURVE_REGIONAL = 1.32;
 
 const LOWER_48_BOUNDS = [-125.288086, 26.39187, -67.192383, 49.496675];
 const US_CENTER = [-96, 38.5];
@@ -90,11 +89,18 @@ function moveCamera(map, point, zoom, focusProgress = 1) {
 	});
 }
 
-// Drives a single camera flight with Mapbox's native flyTo (which arcs the
-// zoom out and back in). A parallel time-based loop reports progress for
-// callbacks and handles cancellation; the camera itself is fully owned by
-// Mapbox for the duration of the flight.
-function flyCamera(map, { point, zoom, duration, padding, curve = FLY_CURVE, shouldContinue, onProgress }) {
+// easeTo for short same-state hops; flyTo with a moderate curve for cross-region legs.
+// flyTo dips zoom mid-flight — too aggressive a curve makes basemap labels blink.
+function flyCamera(map, {
+	point,
+	zoom,
+	duration,
+	padding,
+	arc = false,
+	curve = FLY_CURVE_REGIONAL,
+	shouldContinue,
+	onProgress
+}) {
 	return new Promise((resolve) => {
 		let raf = 0;
 		let settled = false;
@@ -124,22 +130,25 @@ function flyCamera(map, { point, zoom, duration, padding, curve = FLY_CURVE, sho
 			if (progress < 1) {
 				raf = requestAnimationFrame(tick);
 			} else {
-				// moveend should fire imminently; this is just a safety net so the
-				// promise can never hang.
 				setTimeout(finish, 150);
 			}
 		};
 
 		map.once('moveend', finish);
 
-		map.flyTo({
+		const camera = {
 			center: [point.lon, point.lat],
 			zoom,
 			duration,
 			padding,
-			curve,
 			essential: true
-		});
+		};
+
+		if (arc) {
+			map.flyTo({ ...camera, curve });
+		} else {
+			map.easeTo(camera);
+		}
 
 		raf = requestAnimationFrame(tick);
 	});
@@ -147,6 +156,10 @@ function flyCamera(map, { point, zoom, duration, padding, curve = FLY_CURVE, sho
 
 export function getTourLegDuration(from, to) {
 	return isSameRegion(asPoint(from), asPoint(to)) ? TOUR_FLY_LOCAL_MS : TOUR_FLY_REGION_MS;
+}
+
+export function usesFlightArc(from, to) {
+	return !isSameRegion(asPoint(from), asPoint(to));
 }
 
 export async function runCaseStudyTour({
@@ -254,6 +267,7 @@ async function flyBetween(
 		zoom: SITE_ZOOM,
 		duration,
 		padding: getCaseStudyFocusPadding(map, 1),
+		arc: usesFlightArc(from, to),
 		shouldContinue
 	});
 }
