@@ -81,6 +81,7 @@ export function extractFileInfo(htmlContent, distPath = DIST_PATH) {
 
 export function distAssetPaths(info, distPath = DIST_PATH) {
 	const paths = [
+		join(distPath, EMBED_BOOTSTRAP_FILENAME),
 		join(distPath, '_app/env.js'),
 		...info.cssFiles.map((file) => join(distPath, '_app/immutable/assets', file)),
 		join(distPath, '_app/immutable/entry', info.startFile),
@@ -106,7 +107,7 @@ function containerAttributes() {
 	if (mode === 'column') {
 		styles.push(`max-width:${maxWidthPx}px`, 'margin-inline:0');
 	}
-	return `id="${EMBED_CONTAINER_ID}" class="full-bleed" style="${styles.join(';')}"`;
+	return `id="${EMBED_CONTAINER_ID}" style="${styles.join(';')}"`;
 }
 
 const EMBED_STYLES = `<style>
@@ -116,6 +117,45 @@ const EMBED_STYLES = `<style>
 	margin-right: calc(50% - 50vw);
 }
 </style>`;
+
+const EMBED_BOOTSTRAP_FILENAME = 'embed-bootstrap.js';
+
+const EMBED_BOOTSTRAP_SOURCE = `const cfg = window.__SVELTE_EMBED_CONFIG__;
+if (!cfg) {
+	throw new Error("Missing window.__SVELTE_EMBED_CONFIG__");
+}
+
+const baseUrl = cfg.baseUrl.replace(/\\/?$/, "/");
+window[cfg.configVar] = { base: baseUrl, assets: baseUrl, env: null };
+
+const container = document.getElementById(cfg.containerId);
+if (!container) {
+	throw new Error(\`Container #\${cfg.containerId} not found\`);
+}
+
+try {
+	const { env } = await import(new URL("_app/env.js", baseUrl).href);
+	window[cfg.configVar].env = env;
+} catch {
+	// env.js is optional for this embed
+}
+
+const [kit, app] = await Promise.all([
+	import(new URL(\`_app/immutable/entry/\${cfg.startFile}\`, baseUrl).href),
+	import(new URL(\`_app/immutable/entry/\${cfg.appFile}\`, baseUrl).href)
+]);
+
+kit.start(app, container, {
+	node_ids: [0, 2],
+	data: [null, null],
+	form: null,
+	error: null
+});
+`;
+
+function writeEmbedBootstrap(distPath) {
+	writeFileSync(join(distPath, EMBED_BOOTSTRAP_FILENAME), EMBED_BOOTSTRAP_SOURCE);
+}
 
 export function generateEmbedHTML(info, cdnBaseUrl = DEFAULT_CDN_BASE_URL) {
 	const { cssFiles, modulepreloadFiles, startFile, appFile, configVar } = info;
@@ -136,35 +176,37 @@ ${cssFiles.map((file) => `<link href="${baseUrl}_app/immutable/assets/${file}" r
 <link rel="modulepreload" href="${baseUrl}_app/env.js">
 ${modulepreloadFiles.map((file) => `<link rel="modulepreload" href="${baseUrl}_app/immutable/${file}">`).join('\n')}
 
+<div class="full-bleed">
 <div ${containerAttributes()}>
 	<div class="demo svelte-vfho01">
 		<p>Loading…</p>
 	</div>
 </div>
+</div>
 
 <script>
 (function () {
-	const BASE_URL = "${baseUrl}";
-	window.${configVar} = { base: BASE_URL, assets: BASE_URL };
+	window.__SVELTE_EMBED_CONFIG__ = {
+		configVar: ${JSON.stringify(configVar)},
+		containerId: ${JSON.stringify(EMBED_CONTAINER_ID)},
+		baseUrl: ${JSON.stringify(baseUrl)},
+		startFile: ${JSON.stringify(startFile)},
+		appFile: ${JSON.stringify(appFile)}
+	};
 
-	const container = document.getElementById("${EMBED_CONTAINER_ID}");
+	const script = document.createElement("script");
+	script.type = "module";
+	script.src = ${JSON.stringify(baseUrl + EMBED_BOOTSTRAP_FILENAME)};
 
-	Promise.all([
-		import(BASE_URL + '_app/immutable/entry/${startFile}'),
-		import(BASE_URL + '_app/immutable/entry/${appFile}')
-	])
-		.then(([kit, app]) => {
-			kit.start(app, container, {
-				node_ids: [0, 2],
-				data: [null, null],
-				form: null,
-				error: null
-			});
-		})
-		.catch((error) => {
-			console.error('Svelte app failed to load:', error);
-			container.innerHTML = '<p>Error loading app. Check the CDN URL in src/lib/config/project.config.js and that dist/ is published.</p>';
-		});
+	script.addEventListener("error", (error) => {
+		console.error("Svelte app failed to load:", error);
+		const container = document.getElementById(${JSON.stringify(EMBED_CONTAINER_ID)});
+		if (container) {
+			container.innerHTML = "<p>Error loading app. If assets load in the browser but not here, your site may block external scripts (CSP). Allow https://cdn.jsdelivr.net in script-src, or ask your host to whitelist it.</p>";
+		}
+	});
+
+	document.head.appendChild(script);
 })();
 </script>`;
 }
@@ -188,6 +230,7 @@ export function runGenerateEmbed({
 		throw new Error('Could not extract embed asset paths from dist/index.html');
 	}
 
+	writeEmbedBootstrap(distPath);
 	assertDistAssets(fileInfo, distPath);
 
 	const embedHTML = generateEmbedHTML(fileInfo, cdnBaseUrl);
