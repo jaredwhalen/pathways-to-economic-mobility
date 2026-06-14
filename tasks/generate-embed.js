@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { readFileSync, writeFileSync, existsSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync, readdirSync, statSync } from 'fs';
 import { join, dirname, relative } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -14,16 +14,48 @@ const DIST_PATH = join(ROOT_PATH, 'dist');
 const INDEX_HTML_PATH = join(DIST_PATH, 'index.html');
 const OUTPUT_PATH = join(ROOT_PATH, 'wordpress-embed.html');
 
-const JSDELIVR_BASE_URL = projectConfig.build.cdnBaseUrl.replace(/\/?$/, '/');
+const DEFAULT_CDN_BASE_URL = projectConfig.build.cdnBaseUrl.replace(/\/?$/, '/');
 const EMBED_CONTAINER_ID = projectConfig.build.embedContainerId;
 
-export function extractFileInfo(htmlContent) {
-	const cssMatches = htmlContent.matchAll(/href="\.\/_app\/immutable\/assets\/([^"]+\.css)"/g);
-	const cssFiles = [...new Set(Array.from(cssMatches, (match) => match[1]))];
+export function pinCdnBaseUrl(baseUrl, gitRef) {
+	const normalized = baseUrl.replace(/\/?$/, '/');
+	if (!gitRef) return normalized;
+	return normalized.replace(/@[^/]+(?=\/)/, `@${gitRef}`);
+}
 
-	const modulepreloadMatches = htmlContent.matchAll(/href="\.\/_app\/immutable\/([^"]+\.js)"/g);
-	const modulepreloadFiles = Array.from(modulepreloadMatches).map((match) => match[1]);
+function collectImmutableCss(distPath) {
+	const assetsDir = join(distPath, '_app/immutable/assets');
+	if (!existsSync(assetsDir)) return [];
 
+	return readdirSync(assetsDir)
+		.filter((file) => file.endsWith('.css'))
+		.sort();
+}
+
+function collectImmutableJs(distPath) {
+	const root = join(distPath, '_app/immutable');
+	if (!existsSync(root)) return [];
+
+	const files = [];
+
+	function walk(dir, relDir) {
+		for (const name of readdirSync(dir)) {
+			const fullPath = join(dir, name);
+			const relPath = relDir ? `${relDir}/${name}` : name;
+
+			if (statSync(fullPath).isDirectory()) {
+				walk(fullPath, relPath);
+			} else if (name.endsWith('.js')) {
+				files.push(relPath);
+			}
+		}
+	}
+
+	walk(root, '');
+	return files.sort();
+}
+
+export function extractFileInfo(htmlContent, distPath = DIST_PATH) {
 	const startMatch = htmlContent.match(/import\("\.\/_app\/immutable\/entry\/([^"]+\.js)"\)/);
 	const appMatch = htmlContent.match(/import\("\.\/_app\/immutable\/entry\/([^"]+\.js)"\)/g);
 
@@ -37,19 +69,19 @@ export function extractFileInfo(htmlContent) {
 	if (!configMatch) {
 		throw new Error('Could not find SvelteKit configuration variable in dist/index.html');
 	}
-	const configVar = configMatch[1];
 
 	return {
-		cssFiles,
-		modulepreloadFiles,
+		cssFiles: collectImmutableCss(distPath),
+		modulepreloadFiles: collectImmutableJs(distPath),
 		startFile,
 		appFile,
-		configVar
+		configVar: configMatch[1]
 	};
 }
 
 export function distAssetPaths(info, distPath = DIST_PATH) {
 	const paths = [
+		join(distPath, '_app/env.js'),
 		...info.cssFiles.map((file) => join(distPath, '_app/immutable/assets', file)),
 		join(distPath, '_app/immutable/entry', info.startFile),
 		join(distPath, '_app/immutable/entry', info.appFile),
@@ -85,22 +117,24 @@ const EMBED_STYLES = `<style>
 }
 </style>`;
 
-export function generateEmbedHTML(info) {
+export function generateEmbedHTML(info, cdnBaseUrl = DEFAULT_CDN_BASE_URL) {
 	const { cssFiles, modulepreloadFiles, startFile, appFile, configVar } = info;
+	const baseUrl = cdnBaseUrl.replace(/\/?$/, '/');
 
 	return `<!-- WordPress embed bundle (see src/lib/config/project.config.js → build) -->
 <!--
 1. npm run publish
 2. Paste this block into a Custom HTML block
 
-CDN base: ${JSDELIVR_BASE_URL}
+CDN base: ${baseUrl}
 -->
 
 ${EMBED_STYLES}
 
-${cssFiles.map((file) => `<link href="${JSDELIVR_BASE_URL}_app/immutable/assets/${file}" rel="stylesheet">`).join('\n\n')}
+${cssFiles.map((file) => `<link href="${baseUrl}_app/immutable/assets/${file}" rel="stylesheet">`).join('\n\n')}
 
-${modulepreloadFiles.map((file) => `<link rel="modulepreload" href="${JSDELIVR_BASE_URL}_app/immutable/${file}">`).join('\n')}
+<link rel="modulepreload" href="${baseUrl}_app/env.js">
+${modulepreloadFiles.map((file) => `<link rel="modulepreload" href="${baseUrl}_app/immutable/${file}">`).join('\n')}
 
 <div ${containerAttributes()}>
 	<div class="demo svelte-vfho01">
@@ -110,15 +144,27 @@ ${modulepreloadFiles.map((file) => `<link rel="modulepreload" href="${JSDELIVR_B
 
 <script>
 (function () {
-	const BASE_URL = "${JSDELIVR_BASE_URL}";
-	window.${configVar} = { base: BASE_URL, assets: BASE_URL };
+	const BASE_URL = "${baseUrl}";
+
+	// Elementor runs pasted HTML in the editor before the live page is saved.
+	if (typeof window.elementorFrontend !== 'undefined' && window.elementorFrontend.isEditMode?.()) {
+		return;
+	}
 
 	const container = document.getElementById("${EMBED_CONTAINER_ID}");
+	if (!container) return;
 
-	Promise.all([
-		import(BASE_URL + '_app/immutable/entry/${startFile}'),
-		import(BASE_URL + '_app/immutable/entry/${appFile}')
-	])
+	window.${configVar} = { base: BASE_URL, assets: BASE_URL, env: null };
+
+	import(BASE_URL + '_app/env.js')
+		.then(({ env }) => {
+			window.${configVar}.env = env;
+
+			return Promise.all([
+				import(BASE_URL + '_app/immutable/entry/${startFile}'),
+				import(BASE_URL + '_app/immutable/entry/${appFile}')
+			]);
+		})
 		.then(([kit, app]) => {
 			kit.start(app, container, {
 				node_ids: [0, 2],
@@ -129,7 +175,7 @@ ${modulepreloadFiles.map((file) => `<link rel="modulepreload" href="${JSDELIVR_B
 		})
 		.catch((error) => {
 			console.error('Svelte app failed to load:', error);
-			container.innerHTML = '<p>Error loading app. Check the CDN URL in src/lib/config/project.config.js and that dist/ is published.</p>';
+			container.innerHTML = '<p>Error loading app. Run npm run publish, then paste the updated wordpress-embed.html.</p>';
 		});
 })();
 </script>`;
@@ -138,6 +184,7 @@ ${modulepreloadFiles.map((file) => `<link rel="modulepreload" href="${JSDELIVR_B
 export function runGenerateEmbed({
 	distPath = DIST_PATH,
 	outputPath = OUTPUT_PATH,
+	cdnBaseUrl = DEFAULT_CDN_BASE_URL,
 	quiet = false
 } = {}) {
 	const indexHtmlPath = join(distPath, 'index.html');
@@ -147,7 +194,7 @@ export function runGenerateEmbed({
 	}
 
 	const htmlContent = readFileSync(indexHtmlPath, 'utf-8');
-	const fileInfo = extractFileInfo(htmlContent);
+	const fileInfo = extractFileInfo(htmlContent, distPath);
 
 	if (!fileInfo.cssFiles.length || !fileInfo.startFile || !fileInfo.appFile) {
 		throw new Error('Could not extract embed asset paths from dist/index.html');
@@ -155,12 +202,12 @@ export function runGenerateEmbed({
 
 	assertDistAssets(fileInfo, distPath);
 
-	const embedHTML = generateEmbedHTML(fileInfo);
+	const embedHTML = generateEmbedHTML(fileInfo, cdnBaseUrl);
 	writeFileSync(outputPath, embedHTML);
 
 	if (!quiet) {
 		console.log('✅ wordpress-embed.html written');
-		console.log(`   CDN: ${JSDELIVR_BASE_URL}`);
+		console.log(`   CDN: ${cdnBaseUrl.replace(/\/?$/, '/')}`);
 		console.log(`   Container: #${EMBED_CONTAINER_ID}`);
 		console.log(`   Assets checked: ${distAssetPaths(fileInfo, distPath).length}`);
 	}

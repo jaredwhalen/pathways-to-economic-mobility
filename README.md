@@ -57,7 +57,9 @@ Flags:
 - `npm run publish -- --no-push` — build, sync, and commit locally without pushing
 - `npm run publish -- --no-git` — build and sync only; skip commit/push
 
-After publishing, paste `wordpress-embed.html` into WordPress if the asset hashes changed. jsDelivr reads `dist/` from GitHub (`build.cdnBaseUrl` in `project.config.js`). GitHub Pages serves `docs/`.
+After publishing, paste `wordpress-embed.html` into WordPress if the asset hashes changed. jsDelivr reads `dist/` from GitHub (`build.cdnBaseUrl` in `project.config.js`). GitHub Pages serves `docs/`. `npm run publish` pins the embed CDN URL to the git commit SHA so jsDelivr always serves the exact build you pushed.
+
+**Elementor note:** The embed intentionally skips booting inside Elementor's edit mode. Save and view the live page to test; editor console errors while pasting are expected.
 
 ## WordPress embed
 

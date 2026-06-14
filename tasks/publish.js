@@ -4,7 +4,8 @@ import { cpSync, rmSync, writeFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { spawnSync } from 'child_process';
 import { fileURLToPath } from 'url';
-import { runGenerateEmbed } from './generate-embed.js';
+import projectConfig from '../src/lib/config/project.config.js';
+import { pinCdnBaseUrl, runGenerateEmbed } from './generate-embed.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -12,7 +13,6 @@ const __dirname = dirname(__filename);
 const ROOT_PATH = join(__dirname, '..');
 const DIST_PATH = join(ROOT_PATH, 'dist');
 const DOCS_PATH = join(ROOT_PATH, 'docs');
-const EMBED_PATH = join(ROOT_PATH, 'wordpress-embed.html');
 
 const args = new Set(process.argv.slice(2));
 const noPush = args.has('--no-push');
@@ -32,27 +32,21 @@ function run(command, commandArgs, { allowFailure = false } = {}) {
 	return result;
 }
 
-function build() {
-	console.log('🏗️  Building production bundle...');
-	run('npm', ['run', 'build']);
+function gitOutput(commandArgs) {
+	const result = spawnSync('git', commandArgs, {
+		cwd: ROOT_PATH,
+		encoding: 'utf-8'
+	});
+
+	if (result.status !== 0) {
+		process.exit(result.status ?? 1);
+	}
+
+	return result.stdout.trim();
 }
 
-function generateEmbed() {
-	console.log('🧩 Generating wordpress-embed.html...');
-	runGenerateEmbed({ quiet: true });
-	console.log('✅ wordpress-embed.html written');
-}
-
-function syncDocsFromDist() {
-	console.log('📄 Syncing dist/ → docs/ for GitHub Pages...');
-	rmSync(DOCS_PATH, { recursive: true, force: true });
-	cpSync(DIST_PATH, DOCS_PATH, { recursive: true });
-	writeFileSync(join(DOCS_PATH, '.nojekyll'), '');
-	console.log('✅ docs/ updated');
-}
-
-function hasPublishChanges() {
-	const result = spawnSync('git', ['status', '--porcelain', 'dist', 'docs', 'wordpress-embed.html'], {
+function hasChanges(paths) {
+	const result = spawnSync('git', ['status', '--porcelain', ...paths], {
 		cwd: ROOT_PATH,
 		encoding: 'utf-8'
 	});
@@ -64,17 +58,53 @@ function hasPublishChanges() {
 	return Boolean(result.stdout?.trim());
 }
 
+function build() {
+	console.log('🏗️  Building production bundle...');
+	run('npm', ['run', 'build']);
+}
+
+function syncDocsFromDist() {
+	console.log('📄 Syncing dist/ → docs/ for GitHub Pages...');
+	rmSync(DOCS_PATH, { recursive: true, force: true });
+	cpSync(DIST_PATH, DOCS_PATH, { recursive: true });
+	writeFileSync(join(DOCS_PATH, '.nojekyll'), '');
+	console.log('✅ docs/ updated');
+}
+
+function generateEmbedForCommit(gitRef) {
+	const cdnBaseUrl = pinCdnBaseUrl(projectConfig.build.cdnBaseUrl, gitRef);
+	console.log('🧩 Generating wordpress-embed.html...');
+	runGenerateEmbed({ cdnBaseUrl, quiet: true });
+	console.log(`✅ wordpress-embed.html written (pinned to ${gitRef})`);
+}
+
 function commitAndPush() {
-	if (!hasPublishChanges()) {
-		console.log('ℹ️  No publish output changes to commit.');
-		return;
+	const distDocsChanged = hasChanges(['dist', 'docs']);
+
+	if (distDocsChanged) {
+		console.log('📦 Staging dist/ and docs/...');
+		run('git', ['add', '-A', 'dist', 'docs']);
+		console.log('💾 Committing build output...');
+		run('git', ['commit', '-m', 'Publish build']);
+	} else {
+		console.log('ℹ️  dist/ and docs/ unchanged since last commit.');
 	}
 
-	console.log('📦 Staging dist/, docs/, and wordpress-embed.html...');
-	run('git', ['add', '-A', 'dist', 'docs', 'wordpress-embed.html']);
+	const gitRef = gitOutput(['rev-parse', 'HEAD']);
+	generateEmbedForCommit(gitRef);
 
-	console.log('💾 Committing publish output...');
-	run('git', ['commit', '-m', 'Publish build']);
+	if (hasChanges(['wordpress-embed.html'])) {
+		console.log('📦 Staging wordpress-embed.html...');
+		run('git', ['add', 'wordpress-embed.html']);
+
+		if (distDocsChanged) {
+			console.log('💾 Amending commit with pinned embed...');
+			run('git', ['commit', '--amend', '--no-edit']);
+		} else {
+			console.log('💾 Committing embed update...');
+			run('git', ['commit', '-m', 'Update embed CDN pin']);
+		}
+	}
 
 	if (noPush) {
 		console.log('⏭️  Skipping push (--no-push).');
@@ -88,10 +118,10 @@ function commitAndPush() {
 
 function main() {
 	build();
-	generateEmbed();
 	syncDocsFromDist();
 
 	if (noGit) {
+		generateEmbedForCommit('main');
 		console.log('⏭️  Skipping git (--no-git).');
 		console.log('   dist/, docs/, and wordpress-embed.html are ready locally.');
 		return;
