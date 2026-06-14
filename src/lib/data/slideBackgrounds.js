@@ -8,10 +8,6 @@ import CultureOfSuccessBackground from '$lib/components/slides/culture-of-succes
 import AascuPartnershipBackground from '$lib/components/slides/aascu-partnership/AascuPartnershipBackground.svelte';
 import { slides } from '$lib/data/copy.js';
 
-/** @typedef {'light' | 'dark'} SlideTheme */
-/** @typedef {{ id: string, slideIds: string[], theme: SlideTheme, component: import('svelte').Component }} BackgroundLayer */
-
-/** @type {BackgroundLayer[]} */
 export const BACKGROUND_LAYERS = [
 	{
 		id: 'opening',
@@ -53,16 +49,16 @@ export const BACKGROUND_LAYERS = [
 	}
 ];
 
-/** @type {Set<string>} */
 export const SLIDES_WITH_BACKGROUNDS = new Set(
 	BACKGROUND_LAYERS.flatMap((layer) => layer.slideIds)
 );
 
-/**
- * Resolve a slide's background layer id from copy data.
- * @param {string} slideId
- */
 export function getBackgroundIdForSlide(slideId) {
 	const slide = slides.find((entry) => entry.id === slideId);
 	return slide?.background ?? null;
+}
+
+export function getSlideTheme(slideId) {
+	const layer = BACKGROUND_LAYERS.find((entry) => entry.slideIds.includes(slideId));
+	return layer?.theme ?? 'light';
 }

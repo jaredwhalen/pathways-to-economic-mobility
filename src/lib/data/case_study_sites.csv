@@ -1,19 +1,19 @@
-Institution,City,State,"Geocodio Latitude","Geocodio Longitude","Geocodio Accuracy Score","Geocodio Accuracy Type","Geocodio Address Line 1","Geocodio Address Line 2","Geocodio Address Line 3","Geocodio House Number","Geocodio Street","Geocodio Unit Type","Geocodio Unit Number","Geocodio City","Geocodio State","Geocodio County","Geocodio Postal Code","Geocodio Country","Geocodio Source","Geocodio Stable Address Key","Geocodio Match Type"
-"California State University, Los Angeles","Los Angeles",California,33.973951,-118.248405,1,place,,,"Los Angeles, CA 90001",,,,,"Los Angeles",CA,"Los Angeles County",90001,US,"TIGER/Line® from the US Census Bureau",,
-"California State University, San Bernardino","San Bernardino",California,34.104794,-117.29215,1,place,,,"San Bernardino, CA 92401",,,,,"San Bernardino",CA,"San Bernardino County",92401,US,"TIGER/Line® from the US Census Bureau",,
-"Ferris State University","Big Rapids ",Michigan,43.69808,-85.48366,1,place,,,"Big Rapids, MI 49307",,,,,"Big Rapids",MI,"Mecosta County",49307,US,"TIGER/Line® from the US Census Bureau",,
-"Houston City College",Houston,Texas,29.813142,-95.309789,1,place,,,"Houston, TX 77001",,,,,Houston,TX,"Harris County",77001,US,"TIGER/Line® from the US Census Bureau",,
-"Lamar University",Beaumont,Texas,30.073712,-94.109705,1,place,,,"Beaumont, TX 77701",,,,,Beaumont,TX,"Jefferson County",77701,US,"TIGER/Line® from the US Census Bureau",,
-"Malcolm X College",Chicago,Illinois,41.88531,-87.62213,1,place,,,"Chicago, IL 60601",,,,,Chicago,IL,"Cook County",60601,US,"TIGER/Line® from the US Census Bureau",,
-"Prairie View A&M University","Prairie View",Texas,30.09327,-95.98773,1,place,,,"Prairie View, TX 77446",,,,,"Prairie View",TX,"Waller County",77446,US,"TIGER/Line® from the US Census Bureau",,
-"Riverside City College",Riverside,California,33.99504,-117.373184,1,place,,,"Riverside, CA 92501",,,,,Riverside,CA,"Riverside County",92501,US,"TIGER/Line® from the US Census Bureau",,
-"Southern Illinois University Carbondale",Carbondale,Illinois,37.739004,-89.209109,1,place,,,"Carbondale, IL 62901",,,,,Carbondale,IL,"Jackson County",62901,US,"TIGER/Line® from the US Census Bureau",,
-"Southwestern College","Chula Vista",California,32.636922,-117.050072,1,place,,,"Chula Vista, CA 91910",,,,,"Chula Vista",CA,"San Diego County",91910,US,"TIGER/Line® from the US Census Bureau",,
-"Texas A&M International University",Laredo,Texas,27.515879,-99.494078,1,place,,,"Laredo, TX 78040",,,,,Laredo,TX,"Webb County",78040,US,"TIGER/Line® from the US Census Bureau",,
-"University of California, Merced",Merced,California,37.345785,-120.42415,1,place,,,"Merced, CA 95340",,,,,Merced,CA,"Merced County",95340,US,"TIGER/Line® from the US Census Bureau",,
-"University of California, Riverside",Riverside,California,33.99504,-117.373184,1,place,,,"Riverside, CA 92501",,,,,Riverside,CA,"Riverside County",92501,US,"TIGER/Line® from the US Census Bureau",,
-"University of Illinois Chicago",Chicago,Illinois,41.88531,-87.62213,1,place,,,"Chicago, IL 60601",,,,,Chicago,IL,"Cook County",60601,US,"TIGER/Line® from the US Census Bureau",,
-"University of Illinois Springfield",Springfield,Illinois,39.800698,-89.648801,1,place,,,"Springfield, IL 62701",,,,,Springfield,IL,"Sangamon County",62701,US,"TIGER/Line® from the US Census Bureau",,
-"University of Texas at El Paso","El Paso",Texas,31.763608,-106.484592,1,place,,,"El Paso, TX 79901",,,,,"El Paso",TX,"El Paso County",79901,US,"TIGER/Line® from the US Census Bureau",,
-"The University of Texas Rio Grande Valley",Edinburgh,Texas,26.280689,-98.183295,1,place,,,"Edinburg, TX 78539",,,,,Edinburg,TX,"Hidalgo County",78539,US,"TIGER/Line® from the US Census Bureau",,
-"Wayne State University",Detroit,Michigan,42.347021,-83.060184,1,place,,,"Detroit, MI 48201",,,,,Detroit,MI,"Wayne County",48201,US,"TIGER/Line® from the US Census Bureau",,
+Institution,City,State,Latitude,Longitude
+"California State University, Los Angeles",Los Angeles,California,34.0665,-118.1683
+"California State University, San Bernardino",San Bernardino,California,34.1817,-117.3242
+Ferris State University,Big Rapids,Michigan,43.684,-85.4862
+Houston City College,Houston,Texas,29.7365,-95.3857
+Lamar University,Beaumont,Texas,30.0404,-94.0745
+Malcolm X College,Chicago,Illinois,41.8746,-87.6816
+Prairie View A&M University,Prairie View,Texas,30.0933,-95.9877
+Riverside City College,Riverside,California,33.9737,-117.3732
+Southern Illinois University Carbondale,Carbondale,Illinois,37.7123,-89.2182
+Southwestern College,Chula Vista,California,32.6404,-116.9944
+Texas A&M International University,Laredo,Texas,27.5728,-99.435
+"University of California, Merced",Merced,California,37.3652,-120.4241
+"University of California, Riverside",Riverside,California,33.9737,-117.3281
+University of Illinois Chicago,Chicago,Illinois,41.8708,-87.6505
+University of Illinois Springfield,Springfield,Illinois,39.7308,-89.6165
+University of Texas at El Paso,El Paso,Texas,31.7717,-106.5055
+The University of Texas Rio Grande Valley,Edinburg,Texas,26.305,-98.1744
+Wayne State University,Detroit,Michigan,42.3587,-83.0721

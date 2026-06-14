@@ -1,23 +1,15 @@
 import { scaleLinear } from 'd3-scale';
 
-/** @typedef {{ id: string, label: string, color?: string, image?: string | null }} RegionNodeDef */
-/** @typedef {{ id: string, label: string, color: string, image: string | null, baseAngle: number, r: number, imageR: number, ringWidth: number, labelGap: number }} RegionNodeBase */
-/** @typedef {RegionNodeBase & { x: number, y: number, labelX: number, labelY: number }} RegionNode */
-/** @typedef {{ cx: number, cy: number, r: number, stroke: number }} RegionRing */
-/** @typedef {{ width: number, height: number, cx: number, cy: number, orbit: number, nodes: RegionNodeBase[], ring: RegionRing, type: { label: number, strokeMaskR: number } }} RegionDiagramLayout */
-
 export const REGION_DIAGRAM_WIDTH = 800;
 export const REGION_DIAGRAM_ASPECT = 1;
 export const REGION_RING_COLOR = '#ddd';
 
-/** Top, bottom-right, bottom-left — 120° apart (-90°, 30°, 150°). */
 const NODE_ANGLE_BY_ID = {
 	campus: -Math.PI / 2,
 	economy: Math.PI / 6,
 	community: (5 * Math.PI) / 6
 };
 
-/** @type {RegionNodeDef[]} */
 export const REGION_NODES = [
 	{
 		id: 'campus',
@@ -34,13 +26,6 @@ export const REGION_NODES = [
 	{ id: 'economy', label: 'Regional economy', color: 'var(--color-purple)', image: null }
 ];
 
-/**
- * @param {RegionNodeBase} node
- * @param {number} cx
- * @param {number} cy
- * @param {number} orbit
- * @param {number} rotation
- */
 export function positionRotatedNode(node, cx, cy, orbit, rotation) {
 	const angle = node.baseAngle + rotation;
 	const x = cx + orbit * Math.cos(angle);
@@ -54,21 +39,12 @@ export function positionRotatedNode(node, cx, cy, orbit, rotation) {
 	};
 }
 
-/**
- * @param {RegionDiagramLayout} layout
- * @param {number} rotation
- */
 export function getRotatedNodes(layout, rotation) {
 	return layout.nodes.map((node) =>
 		positionRotatedNode(node, layout.cx, layout.cy, layout.orbit, rotation)
 	);
 }
 
-/**
- * @param {number} width
- * @param {RegionNodeDef[]} [nodes]
- * @param {number} [aspect]
- */
 export function buildRegionDiagramLayout(
 	width,
 	nodes = REGION_NODES,

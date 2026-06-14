@@ -6,16 +6,11 @@ export const MAP = {
 	padding: 12
 };
 
-/**
- * @param {import('geojson').FeatureCollection} geojson
- * @param {number} [width]
- * @param {number} [height]
- */
 export function buildMapLayout(geojson, width = MAP.width, height = MAP.height) {
 	const features = geojson.features.filter(
 		(f) => f.properties?.STATE !== '72' && f.id !== '72'
 	);
-	const collection = /** @type {import('geojson').FeatureCollection} */ ({
+	const collection = ({
 		type: 'FeatureCollection',
 		features
 	});
@@ -36,7 +31,7 @@ export function buildMapLayout(geojson, width = MAP.width, height = MAP.height) 
 		d: path(f) ?? ''
 	}));
 
-	/** @param {number} lon @param {number} lat */
+	
 	function project(lon, lat) {
 		const point = projection([lon, lat]);
 		if (!point) return null;
@@ -46,10 +41,6 @@ export function buildMapLayout(geojson, width = MAP.width, height = MAP.height) 
 	return { width, height, projection, states, project };
 }
 
-/**
- * @param {ReturnType<typeof buildMapLayout>} layout
- * @param {{ lon: number, lat: number }[]} sites
- */
 export function projectSites(layout, sites) {
 	return sites
 		.map((site) => {

@@ -2,7 +2,7 @@
 	import PublicOpinionChart from '$lib/components/PublicOpinionChart.svelte';
 	import { formatSlideParagraph } from '$lib/utils/parseSlideText.js';
 
-	/** @type {{ slide: import('$lib/data/copy.js').Slide, isActive: boolean }} */
+	
 	let { slide, isActive } = $props();
 
 	let paragraphs = $derived(
@@ -12,9 +12,15 @@
 			.filter((paragraph) => paragraph.length > 0)
 			.map((paragraph) => formatSlideParagraph(paragraph))
 	);
+
+	
+	function skipToToolkit(event) {
+		event.preventDefault();
+		document.getElementById('toolkit')?.scrollIntoView({ block: 'start' });
+	}
 </script>
 
-<section class="slide" class:active={isActive}>
+<section class="slide" class:active={isActive} class:slide-regional-opportunity={slide.id === 'regional-opportunity'} class:slide-public-agenda={slide.id === 'public-agenda'}>
 	<div class="slide-content">
 		{#each paragraphs as paragraph}
 			<p class="slide-text">{@html paragraph}</p>
@@ -22,12 +28,18 @@
 		{#if slide.showChart}
 			<PublicOpinionChart active={isActive} />
 		{/if}
+		{#if slide.id === 'opening' && isActive}
+			<a class="skip-to-toolkit" href="#toolkit" onclick={skipToToolkit}>
+				Skip intro
+				<span class="skip-arrow" aria-hidden="true">↓</span>
+			</a>
+		{/if}
 	</div>
 </section>
 
 <style>
 	.slide {
-		height: 100dvh;
+		height: 150dvh;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -43,24 +55,49 @@
 	}
 
 	.slide-content {
+		position: relative;
+		isolation: isolate;
 		width: 100%;
-		max-width: 36rem;
-		padding: 1.25rem 1.5rem;
+		max-width: 30rem;
+		padding: 1.5rem 1.75rem;
 		font-family: var(--font-body);
-		background: var(--slide-surface-bg, var(--color-white));
-		border-top: 2px solid var(--color-teal-light);
-		border-bottom: 2px solid var(--color-teal-light);
-		box-shadow: var(--slide-surface-shadow, 0 4px 24px rgba(3, 31, 67, 0.1));
+		background: transparent;
+		border: 1px solid var(--slide-surface-border-inner, var(--color-teal));
+		box-shadow: var(--slide-surface-shadow, 0 2px 20px rgba(3, 31, 67, 0.08));
+		border-radius: 2px;
 		pointer-events: auto;
+		opacity: 0.5;
+		transition: opacity 400ms ease;
 	}
 
 	.slide.active .slide-content {
-		border-color: var(--color-teal);
+		opacity: 1;
+	}
+
+	.slide-content::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		z-index: -1;
+		border-radius: inherit;
+		background: var(--slide-surface-bg, rgba(255, 255, 255, 0.8));
+		backdrop-filter: blur(var(--slide-surface-blur, 18px));
+		-webkit-backdrop-filter: blur(var(--slide-surface-blur, 18px));
+		pointer-events: none;
+	}
+
+	.slide-content::after {
+		content: '';
+		position: absolute;
+		inset: calc(-1 * var(--slide-surface-border-gap, 5px));
+		border: 1px solid var(--slide-surface-border-outer, var(--color-teal-light));
+		border-radius: calc(2px + var(--slide-surface-border-gap, 5px));
+		pointer-events: none;
 	}
 
 	.slide-text {
-		font-size: clamp(1rem, 2vw, 1.125rem);
-		line-height: 1.55;
+		font-size: clamp(1.125rem, 2.25vw, 1.3125rem);
+		line-height: 1.6;
 		margin: 0 0 0.75rem 0;
 		color: var(--color-navy);
 	}
@@ -93,6 +130,49 @@
 		color: var(--color-region-gray);
 	}
 
+	.slide-regional-opportunity .slide-text :global(.highlight-teal) {
+		font-weight: var(--font-weight-bold);
+	}
+
+	.slide-public-agenda .slide-text :global(.highlight-teal) {
+		font-weight: var(--font-weight-bold);
+	}
+
+	.skip-to-toolkit {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.35rem;
+		margin-top: 1rem;
+		padding: 0.5rem 1rem;
+		font-family: var(--font-body);
+		font-size: 0.8125rem;
+		font-weight: var(--font-weight-regular);
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+		color: var(--color-teal-dark);
+		text-decoration: none;
+		background: rgba(255, 255, 255, 0.6);
+		border: 1px solid var(--color-teal-light);
+		border-radius: 999px;
+		transition:
+			background 150ms ease,
+			border-color 150ms ease,
+			color 150ms ease;
+	}
+
+	.skip-to-toolkit:hover,
+	.skip-to-toolkit:focus-visible {
+		background: rgba(255, 255, 255, 0.9);
+		border-color: var(--color-teal);
+		color: var(--color-teal-dark);
+		outline: none;
+	}
+
+	.skip-arrow {
+		font-size: 1.1em;
+		line-height: 1;
+	}
+
 	@media (max-width: 768px) {
 		.slide {
 			height: 150vh;
@@ -100,7 +180,13 @@
 		}
 
 		.slide-text {
-			font-size: 1rem;
+			font-size: 1.125rem;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.slide-content {
+			transition: none;
 		}
 	}
 </style>

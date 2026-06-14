@@ -1,28 +1,19 @@
-/** @typedef {{ onReveal?: () => void }} RevealOnScrollOptions */
 
-/**
- * @param {HTMLElement} node
- * @param {() => void} [onReveal]
- */
+
 function reveal(node, onReveal) {
 	node.classList.add('is-revealed');
 	onReveal?.();
 }
 
-/**
- * @param {HTMLElement} node
- * @param {RevealOnScrollOptions | (() => void) | undefined} params
- */
 function resolveOnReveal(params) {
 	if (typeof params === 'function') return params;
 	return params?.onReveal;
 }
 
-/** @type {import('svelte/action').Action<HTMLElement, RevealOnScrollOptions | (() => void) | undefined>} */
 export function revealOnScroll(node, params) {
 	let onReveal = resolveOnReveal(params);
 	let revealed = false;
-	/** @type {IntersectionObserver | undefined} */
+	
 	let observer;
 
 	const commitReveal = () => {

@@ -1,4 +1,4 @@
-/** @typedef {{ x: number, y: number }} Point */
+
 
 export const CULTURE_TRIANGLE = {
 	width: 580,
@@ -8,26 +8,18 @@ export const CULTURE_TRIANGLE = {
 	baseRight: { x: 0.87, y: 0.93 }
 };
 
-/** @param {Point} a @param {Point} b @param {number} t */
 export function lerpPoint(a, b, t) {
 	return { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t };
 }
 
-/** @param {Point} p @param {number} width @param {number} height */
 function toPx(p, width, height) {
 	return { x: p.x * width, y: p.y * height };
 }
 
-/** @param {Point[]} points */
 function toPath(points) {
 	return points.map((p) => `${p.x},${p.y}`).join(' ');
 }
 
-/**
- * @param {number} progress 0–1 scroll progress
- * @param {number} [width]
- * @param {number} [height]
- */
 export function buildCultureTriangleLayout(
 	progress,
 	width = CULTURE_TRIANGLE.width,

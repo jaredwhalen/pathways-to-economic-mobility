@@ -7,10 +7,6 @@ export const CHART = {
 	margin: { top: 16, right: 24, bottom: 48, left: 72 }
 };
 
-/**
- * @param {{ yearExtent: [number, number], yMax: number }} config
- * @param {{ year: number, value: number }[]} points
- */
 export function buildLinePath(config, points) {
 	const { width, height, margin } = CHART;
 	const innerW = width - margin.left - margin.right;
@@ -34,12 +30,6 @@ export function buildLinePath(config, points) {
 	};
 }
 
-/**
- * Evenly spaced integer year labels across the full extent, regardless of
- * which years have data points.
- * @param {number} min
- * @param {number} max
- */
 export function yearTicks(min, max) {
 	const lo = Math.floor(min + 1e-6);
 	const hi = Math.ceil(max - 1e-6);
@@ -53,14 +43,6 @@ export function yearTicks(min, max) {
 	return ticks;
 }
 
-/**
- * Fixed dollar tick values on a regular grid. During animated y-scale
- * transitions, pass `currentMax` so labels stay at round values while the
- * axis extends or contracts (same behavior as yearTicks on the x-axis).
- * @param {number} step
- * @param {number} ceiling
- * @param {number} [currentMax]
- */
 export function valueTicks(step, ceiling, currentMax = ceiling) {
 	const ticks = [];
 	for (let v = 0; v <= ceiling; v += step) {
@@ -69,17 +51,11 @@ export function valueTicks(step, ceiling, currentMax = ceiling) {
 	return ticks;
 }
 
-/** @param {number} value */
 export function formatDollars(value) {
 	if (value === 0) return '$0k';
 	return `$${Math.round(value / 1000)}k`;
 }
 
-/**
- * Draw line from left when `animate` becomes true.
- * @param {SVGPathElement} node
- * @param {{ animate: boolean, duration?: number, delay?: number }} params
- */
 export function drawLine(node, params) {
 	let drawn = false;
 	let animating = false;

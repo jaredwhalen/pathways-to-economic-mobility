@@ -46,13 +46,20 @@
 	.culture-triangle {
 		margin: 0;
 		width: 100%;
-		max-width: 580px;
+		height: 100%;
+		padding: var(--diagram-padding-triangle, 8rem);
+		box-sizing: border-box;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 0;
+		min-height: 0;
 	}
 
 	.culture-triangle svg {
 		display: block;
 		width: 100%;
-		height: auto;
+		height: 100%;
 		overflow: visible;
 	}
 

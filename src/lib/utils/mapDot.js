@@ -1,14 +1,5 @@
 import { easeOutCubic } from '$lib/utils/ease.js';
 
-/**
- * Pop a map dot in place by animating radius and opacity.
- * Position must be set via cx/cy on the circle — not CSS transform.
- *
- * @type {import('svelte/action').Action<
- *   SVGCircleElement,
- *   { animate: boolean, visible: boolean, gen?: number, delay?: number, duration?: number, r: number }
- * >}
- */
 export function popDot(node, params) {
 	let raf = 0;
 	let animating = false;

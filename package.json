@@ -9,7 +9,8 @@
 		"build:embed": "npm run build && node tasks/generate-embed.js",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
-		"gdoc": "node tasks/fetch-google.js",
+		"archie": "node tasks/fetch-google.js",
+		"archie:reverse": "node tasks/archie-reverse.js",
 		"setup": "node tasks/setup.js"
 	},
 	"devDependencies": {
@@ -27,6 +28,7 @@
 		"change-case": "^5.4.4",
 		"d3": "^7.9.0",
 		"gsap": "^3.15.0",
+		"jughead": "^1.5.0",
 		"lodash.debounce": "^4.0.8",
 		"mapbox-gl": "^3.15.0",
 		"sass": "^1.93.2",

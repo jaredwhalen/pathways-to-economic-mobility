@@ -122,10 +122,6 @@
 
 	.chart-source {
 		margin: 1rem 0 0;
-		font-family: var(--font-body);
-		font-size: 0.6875rem;
-		line-height: 1.45;
-		color: var(--color-teal);
 	}
 
 	@media (max-width: 480px) {

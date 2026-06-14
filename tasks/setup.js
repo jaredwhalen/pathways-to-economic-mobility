@@ -1,8 +1,4 @@
 #!/usr/bin/env node
-/**
- * Post-clone personalization: package name, meta title/description, GitHub org/repo for jsDelivr.
- * Run from repo root: `npm run setup`
- */
 
 import fs from 'fs';
 import { execSync, execFileSync } from 'child_process';
@@ -25,7 +21,6 @@ const ask = (query, defaultValue) =>
 		});
 	});
 
-/** Lowercase kebab-case for package.json `name`. */
 function slugify(input) {
 	const s = input
 		.toLowerCase()
@@ -44,7 +39,6 @@ function titleFromSlug(slug) {
 		.join(' ');
 }
 
-/** Escape for a double-quoted JS string literal (meta description, etc.). */
 function escapeForDoubleQuotedJs(s) {
 	return s.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\r/g, '').replace(/\n/g, '\\n');
 }
@@ -57,7 +51,6 @@ function write(p, content) {
 	fs.writeFileSync(p, content, 'utf8');
 }
 
-/** Replace every occurrence of `token` with `value`. Returns whether at least one replacement ran. */
 function replaceInFile(filePath, token, value) {
 	let content = read(filePath);
 	if (!content.includes(token)) {

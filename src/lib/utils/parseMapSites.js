@@ -1,12 +1,10 @@
-/**
- * @param {Record<string, string>[]} rows
- */
+
 export function parseGeocodedSites(rows) {
 	return rows
 		.map((row, index) => {
 			const id = row.Institution?.trim() ?? '';
-			const lat = Number(row['Geocodio Latitude']);
-			const lon = Number(row['Geocodio Longitude']);
+			const lat = Number(row['Latitude']);
+			const lon = Number(row['Longitude']);
 			return {
 				key: `${id}|${lat}|${lon}|${index}`,
 				id,

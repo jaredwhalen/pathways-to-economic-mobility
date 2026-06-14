@@ -29,7 +29,7 @@
 	.scroller-debug {
 		position: fixed;
 		right: 0.75rem;
-		bottom: 0.75rem;
+		top: 0.75rem;
 		z-index: 9999;
 		pointer-events: none;
 		font-family: ui-monospace, 'SF Mono', Menlo, monospace;

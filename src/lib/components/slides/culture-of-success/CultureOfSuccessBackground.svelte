@@ -3,7 +3,7 @@
 	import { getSlideIndex } from '$lib/data/copy.js';
 	import { easeInOutCubic } from '$lib/utils/ease.js';
 
-	/** @type {{ slideId?: string, slideOffset?: number }} */
+	
 	let { slideId = 'culture-of-success', slideOffset = 0 } = $props();
 
 	const cultureIndex = getSlideIndex('culture-of-success');
@@ -25,10 +25,6 @@
 		width: 100%;
 		height: 100dvh;
 		min-height: 100dvh;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		padding-inline: clamp(1.5rem, 4vw, 2.5rem);
 		box-sizing: border-box;
 	}
 </style>

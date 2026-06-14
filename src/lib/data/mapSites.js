@@ -18,7 +18,6 @@ export const caseStudyHighlightStates = mapStates.filter((state) =>
 	caseStudyStateIds.includes(state.id)
 );
 
-/** States with zero CCIHE opportunity colleges in the source data. */
 export const statesWithoutOpportunitySchools = buildStatesWithoutOpportunitySchools(mapStates);
 
 export { layout as mapLayout };

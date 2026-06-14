@@ -13,7 +13,7 @@
 	import { getSlideIndex } from '$lib/data/copy.js';
 	import { easeInOutCubic, lerp } from '$lib/utils/ease.js';
 
-	/** @type {{ slideId?: string }} */
+	
 	let { slideId = 'college-cost' } = $props();
 
 	const SOURCE = 'Source: U.S. Department of Education College Scorecard';
@@ -29,12 +29,14 @@
 	const views = {
 		cost: {
 			yLabel: collegeCost.yLabel,
+			xLabel: 'Academic year',
 			yearExtent: collegeCost.yearExtent,
 			yMax: collegeCost.yMax,
 			series: collegeCost.series
 		},
 		earnings: {
 			yLabel: postCollegeEarnings.yLabel,
+			xLabel: 'Year',
 			yearExtent: postCollegeEarnings.yearExtent,
 			yMax: postCollegeEarnings.yMax,
 			series: postCollegeEarnings.series
@@ -43,9 +45,9 @@
 
 	const Y_TICK_CEILING = Math.max(views.cost.yMax, views.earnings.yMax);
 
-	/** @typedef {{ yearMin: number, yearMax: number, yMax: number, yLabelMix: number, chromeOpacity: number, legendOpacity: number, costLineOpacity: number, earningsLineOpacity: number, dotsOpacity: number, costDrawGen: number, earningsDrawGen: number }} ChartFrame */
+	
 
-	let frame = /** @type {ChartFrame} */ ($state({
+	let frame = $state({
 		yearMin: views.cost.yearExtent[0],
 		yearMax: views.cost.yearExtent[1],
 		yMax: views.cost.yMax,
@@ -57,9 +59,9 @@
 		dotsOpacity: 0,
 		costDrawGen: 0,
 		earningsDrawGen: 0
-	}));
+	});
 
-	let activeView = /** @type {'cost' | 'earnings' | null} */ ($state(null));
+	let activeView = $state(null);
 	let sequenceId = 0;
 	let rafId = 0;
 	let prevSlideId = '';
@@ -74,11 +76,11 @@
 		};
 	}
 
-	/** @param {Partial<ChartFrame>} target @param {number} duration */
+	
 	function animateProps(target, duration) {
 		return new Promise((resolve) => {
 			const from = { ...frame };
-			const keys = /** @type {(keyof ChartFrame)[]} */ (Object.keys(target));
+			const keys = (Object.keys(target));
 			const start = performance.now();
 
 			cancelAnimationFrame(rafId);
@@ -109,7 +111,7 @@
 		});
 	}
 
-	/** @param {number} ms */
+	
 	function wait(ms) {
 		const id = sequenceId;
 		return new Promise((resolve) => {
@@ -301,26 +303,29 @@
 
 <div class="mobility-chart">
 	<div class="legend-host">
-		<ul class="legend" class:is-visible={showCostLegend} style:opacity={frame.legendOpacity}>
-			{#each costSeries as s (s.id)}
-				<li class="legend-item">
-					<svg class="legend-swatch" width="28" height="10" aria-hidden="true">
-						<line x1="0" y1="5" x2="28" y2="5" stroke={s.color} stroke-width="3" />
-					</svg>
-					<span class="legend-label">{s.id}</span>
-				</li>
-			{/each}
-		</ul>
-		<ul class="legend" class:is-visible={!showCostLegend} style:opacity={frame.legendOpacity}>
-			{#each earningsSeries as s (s.id)}
-				<li class="legend-item">
-					<svg class="legend-swatch" width="28" height="10" aria-hidden="true">
-						<line x1="0" y1="5" x2="28" y2="5" stroke={s.color} stroke-width="3" />
-					</svg>
-					<span class="legend-label">{s.id}</span>
-				</li>
-			{/each}
-		</ul>
+		<p class="legend-title" style:opacity={frame.legendOpacity}>Family income</p>
+		<div class="legend-panel">
+			<ul class="legend" class:is-visible={showCostLegend} style:opacity={frame.legendOpacity}>
+				{#each costSeries as s (s.id)}
+					<li class="legend-item">
+						<svg class="legend-swatch" width="28" height="10" aria-hidden="true">
+							<line x1="0" y1="5" x2="28" y2="5" stroke={s.color} stroke-width="3" />
+						</svg>
+						<span class="legend-label">{s.id}</span>
+					</li>
+				{/each}
+			</ul>
+			<ul class="legend" class:is-visible={!showCostLegend} style:opacity={frame.legendOpacity}>
+				{#each earningsSeries as s (s.id)}
+					<li class="legend-item">
+						<svg class="legend-swatch" width="28" height="10" aria-hidden="true">
+							<line x1="0" y1="5" x2="28" y2="5" stroke={s.color} stroke-width="3" />
+						</svg>
+						<span class="legend-label">{s.id}</span>
+					</li>
+				{/each}
+			</ul>
+		</div>
 	</div>
 
 	<svg class="chart-svg" viewBox="0 0 {width} {height}" role="img">
@@ -337,6 +342,25 @@
 					<text y={22} text-anchor="middle" class="axis-label">{Math.round(tick)}</text>
 				</g>
 			{/each}
+
+			<text
+				x={innerW / 2}
+				y={innerH + 42}
+				text-anchor="middle"
+				class="axis-title"
+				opacity={1 - frame.yLabelMix}
+			>
+				{views.cost.xLabel}
+			</text>
+			<text
+				x={innerW / 2}
+				y={innerH + 42}
+				text-anchor="middle"
+				class="axis-title"
+				opacity={frame.yLabelMix}
+			>
+				{views.earnings.xLabel}
+			</text>
 
 			<text
 				transform="rotate(-90)"
@@ -425,42 +449,24 @@
 		display: block;
 	}
 
-	.chart-svg :global(.grid-line) {
-		stroke: #e8e8e8;
-		stroke-width: 1;
-	}
-
-	.chart-svg :global(.axis-label) {
-		font-family: var(--font-body);
-		font-size: 11px;
-		fill: var(--color-navy);
-	}
-
-	.chart-svg :global(.axis-title) {
-		font-family: var(--font-body);
-		font-size: 12px;
-		fill: var(--color-navy);
-		font-weight: var(--font-weight-regular);
-	}
-
-	.chart-svg :global(.series-line) {
-		fill: none;
-		stroke-width: 2.5;
-		stroke-linecap: round;
-		stroke-linejoin: round;
-	}
-
-	.chart-svg :global(.series-dot) {
-		stroke: var(--color-white);
-		stroke-width: 1.5;
-	}
-
 	.legend-host {
-		position: relative;
 		flex-shrink: 0;
-		min-height: 3.25rem;
-		padding: 1.25rem 1.5rem 0.75rem;
-		border-bottom: 1px solid #eee;
+		display: flex;
+		flex-direction: column;
+		gap: 0.625rem;
+		padding: 1.25rem 1.5rem 1rem;
+	}
+
+	.legend-title {
+		margin: 0;
+		text-align: center;
+		font-size: 1rem;
+		transition: opacity 280ms ease-in-out;
+	}
+
+	.legend-panel {
+		position: relative;
+		min-height: 2.25rem;
 	}
 
 	.legend {
@@ -474,7 +480,7 @@
 		gap: 1rem 1.75rem;
 		position: absolute;
 		left: 50%;
-		top: 1.25rem;
+		top: 0;
 		transform: translateX(-50%);
 		width: max-content;
 		max-width: calc(100% - 3rem);
@@ -490,30 +496,12 @@
 	}
 
 	.legend-item {
-		display: flex;
-		align-items: center;
 		gap: 0.5rem;
-		font-family: var(--font-body);
 		font-size: 0.9375rem;
-		color: var(--color-navy);
-	}
-
-	.legend-swatch {
-		flex-shrink: 0;
-		display: block;
-	}
-
-	.legend-label {
-		white-space: nowrap;
 	}
 
 	.chart-source {
-		margin: 0;
 		padding: 0 1.25rem 1rem;
-		font-family: var(--font-body);
-		font-size: 0.625rem;
-		line-height: 1.4;
-		color: var(--color-teal);
 		transition: opacity 0.15s linear;
 	}
 </style>

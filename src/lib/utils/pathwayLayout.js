@@ -1,13 +1,7 @@
-/** @typedef {{ x: number, y: number }} PathwayNode */
 
-/** How far control points sit along each span — higher = wider horizontal swoops. */
+
 const SWOOP_TENSION = 0.68;
 
-/**
- * Cubic segments with vertically aligned control points so each leg bows outward
- * between staggered nodes instead of cutting tight corners.
- * @param {PathwayNode[]} points
- */
 export function buildPathThroughNodes(points) {
 	if (points.length < 2) return '';
 
@@ -26,10 +20,6 @@ export function buildPathThroughNodes(points) {
 	return path;
 }
 
-/**
- * Prepend a top anchor so the path enters from above the first card.
- * @param {PathwayNode[]} nodes
- */
 export function withTopAnchor(nodes) {
 	if (nodes.length === 0) return nodes;
 
@@ -38,7 +28,6 @@ export function withTopAnchor(nodes) {
 	return [{ x: first.x, y: 0 }, ...nodes];
 }
 
-/** @param {number} value */
 function format(value) {
 	return Math.round(value * 10) / 10;
 }

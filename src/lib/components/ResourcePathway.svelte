@@ -1,7 +1,7 @@
 <script>
 	import { buildPathThroughNodes, withTopAnchor } from '$lib/utils/pathwayLayout.js';
 
-	/** @type {{ nodes?: import('$lib/utils/pathwayLayout.js').PathwayNode[], revealed?: boolean }} */
+	
 	let { nodes = [], revealed = false } = $props();
 
 	let pathD = $derived(buildPathThroughNodes(withTopAnchor(nodes)));

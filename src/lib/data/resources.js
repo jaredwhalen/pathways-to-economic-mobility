@@ -1,10 +1,5 @@
 const RESOURCE_SITE_BASE = 'https://publicagenda.org';
 
-/** @typedef {'center' | 'left' | 'right'} ResourcePlacement */
-
-/** @typedef {{ id: string, title: string, description: string, path: string, thumbnail: string, placement: ResourcePlacement }} Resource */
-
-/** @type {Resource[]} */
 export const resources = [
 	{
 		id: 'overview',
@@ -53,10 +48,6 @@ export const resources = [
 	}
 ];
 
-/**
- * Absolute URLs keep static prerender from treating resource paths as app routes.
- * @param {string} path
- */
 export function getResourceUrl(path) {
 	return new URL(path, RESOURCE_SITE_BASE).href;
 }

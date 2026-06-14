@@ -23,10 +23,6 @@
 		width: 100%;
 		height: 100dvh;
 		min-height: 100dvh;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		padding: clamp(0.5rem, 2vw, 1.25rem);
 		box-sizing: border-box;
 		background-color: var(--color-off-white);
 	}

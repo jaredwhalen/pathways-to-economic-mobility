@@ -1,11 +1,5 @@
 import csv from '$lib/data/public-opinion.csv';
 
-/**
- * @typedef {{ label: string, pct: number }} OpinionResponse
- * @typedef {{ question: string, responses: OpinionResponse[] }} PublicOpinion
- */
-
-/** @param {Record<string, string>[]} rows */
 export function parsePublicOpinion(rows) {
 	if (!rows?.length) {
 		return { question: '', responses: [] };
@@ -28,7 +22,6 @@ export function parsePublicOpinion(rows) {
 	return { question, responses };
 }
 
-/** @type {PublicOpinion} */
 export const publicOpinion = parsePublicOpinion(csv);
 
 export default publicOpinion;

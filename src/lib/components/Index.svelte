@@ -6,7 +6,9 @@
 	import Slide from '$lib/components/Slide.svelte';
 	import Background from '$lib/components/Background.svelte';
 	import ScrollerDebug from '$lib/components/ScrollerDebug.svelte';
+	import ScrollerProgress from '$lib/components/ScrollerProgress.svelte';
 	import ResourcesSection from '$lib/components/ResourcesSection.svelte';
+	import { getSlideTheme } from '$lib/data/slideBackgrounds.js';
 	import { dev } from '$app/environment';
 
 	let index = $state(0);
@@ -16,12 +18,21 @@
 	let visible = $state(false);
 
 	let activeSlideId = $derived(slides[index]?.id ?? '');
+	let activeSlideTheme = $derived(getSlideTheme(activeSlideId));
 </script>
 
 <FontFaces />
 
 <div class="emcs-scroll theme-light">
 	<Scroller bind:index bind:count bind:progress bind:offset bind:visible>
+		<ScrollerProgress
+			slot="progress"
+			{index}
+			{count}
+			{offset}
+			{visible}
+			theme={activeSlideTheme}
+		/>
 		<div slot="background" class="scroller-background-slot">
 			<Background slideId={activeSlideId} slideCount={count} slideOffset={offset} />
 		</div>

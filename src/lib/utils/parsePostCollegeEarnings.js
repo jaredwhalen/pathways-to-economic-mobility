@@ -8,11 +8,6 @@ export const EARNINGS_STYLES = {
 	'$75k+': { color: '#38aad6' }
 };
 
-/**
- * Linear interpolation between observed years for a smooth line;
- * observed years are returned separately for dot markers.
- * @param {{ year: number, value: number }[]} points
- */
 export function interpolateSeries(points) {
 	const sorted = [...points].sort((a, b) => a.year - b.year);
 	if (!sorted.length) return { line: [], observed: [] };
@@ -38,14 +33,12 @@ export function interpolateSeries(points) {
 	return { line, observed: sorted };
 }
 
-/** @param {string | number} raw */
 function parseEarnings(raw) {
 	return parseFloat(String(raw).replace(/[",]/g, ''));
 }
 
-/** @param {Record<string, string>[]} rows */
 export function parsePostCollegeEarnings(rows) {
-	/** @type {Map<string, { year: number, value: number }[]>} */
+	
 	const seriesMap = new Map(EARNINGS_GROUPS.map((group) => [group, []]));
 	const years = new Set();
 

@@ -8,17 +8,9 @@
 		drawLine
 	} from '$lib/utils/chartLayout.js';
 
-	/**
-	 * @typedef {Object} ChartConfig
-	 * @property {string} title
-	 * @property {string} yLabel
-	 * @property {string} source
-	 * @property {number} yMax
-	 * @property {[number, number]} yearExtent
-	 * @property {{ id: string, color: string, dash: string, points: { year: number, value: number }[], observed?: { year: number, value: number }[] }[]} series
-	 */
+	
 
-	/** @type {{ config: ChartConfig, animate?: boolean, showDots?: boolean, visible?: boolean }} */
+	
 	let { config, animate = false, showDots = false, visible = true } = $props();
 
 	const { width, height, margin } = CHART;
@@ -163,36 +155,6 @@
 		display: block;
 	}
 
-	.chart-svg :global(.grid-line) {
-		stroke: #e8e8e8;
-		stroke-width: 1;
-	}
-
-	.chart-svg :global(.axis-label) {
-		font-family: var(--font-body);
-		font-size: 11px;
-		fill: var(--color-navy);
-	}
-
-	.chart-svg :global(.axis-title) {
-		font-family: var(--font-body);
-		font-size: 12px;
-		fill: var(--color-navy);
-		font-weight: var(--font-weight-regular);
-	}
-
-	.chart-svg :global(.series-line) {
-		fill: none;
-		stroke-width: 2.5;
-		stroke-linecap: round;
-		stroke-linejoin: round;
-	}
-
-	.chart-svg :global(.series-dot) {
-		stroke: var(--color-white);
-		stroke-width: 1.5;
-	}
-
 	.legend {
 		list-style: none;
 		margin: 0;
@@ -205,29 +167,11 @@
 	}
 
 	.legend-item {
-		display: flex;
-		align-items: center;
 		gap: 0.4rem;
-		font-family: var(--font-body);
 		font-size: 0.6875rem;
-		color: var(--color-navy);
-	}
-
-	.legend-swatch {
-		flex-shrink: 0;
-		display: block;
-	}
-
-	.legend-label {
-		white-space: nowrap;
 	}
 
 	.chart-source {
-		margin: 0;
 		padding: 0 1.25rem 1rem;
-		font-family: var(--font-body);
-		font-size: 0.625rem;
-		line-height: 1.4;
-		color: var(--color-teal);
 	}
 </style>

@@ -10,10 +10,10 @@
 
 	let introHtml = $derived(formatSlideParagraph(resourcesIntro));
 
-	/** @type {HTMLDivElement | undefined} */
+	
 	let pathwayStage;
 
-	/** @type {import('$lib/utils/pathwayLayout.js').PathwayNode[]} */
+	
 	let pathwayNodes = $state([]);
 
 	let pathRevealed = $state(false);
@@ -77,7 +77,7 @@
 	});
 </script>
 
-<section class="resources-section" aria-labelledby="resources-heading">
+<section id="toolkit" class="resources-section" aria-labelledby="resources-heading">
 	<div class="resources-inner emcs-content">
 		<header class="resources-header" use:revealOnScroll>
 			<h2 id="resources-heading" class="resources-heading">Toolkit &amp; resources</h2>

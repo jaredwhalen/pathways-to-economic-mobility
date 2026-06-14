@@ -1,12 +1,12 @@
 <script>
 	import { assetUrl } from '$lib/utils/assetUrl.js';
 
-	/** @type {{ isActive?: boolean }} */
+	
 	let { isActive = false } = $props();
 
 	const videoSrc = assetUrl('/video/background.mp4');
 
-	let videoEl = $state(/** @type {HTMLVideoElement | null} */ (null));
+	let videoEl = $state( (null));
 
 	$effect(() => {
 		if (!videoEl) return;

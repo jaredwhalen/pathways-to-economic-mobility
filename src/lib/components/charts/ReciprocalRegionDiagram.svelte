@@ -7,7 +7,7 @@
 		REGION_RING_COLOR
 	} from '$lib/utils/regionDiagramLayout.js';
 
-	/** @type {{ nodes?: import('$lib/utils/regionDiagramLayout.js').RegionNodeDef[] }} */
+	
 	let { nodes = REGION_NODES } = $props();
 
 	const ROTATION_MS_PER_REV = 48000;
@@ -128,9 +128,15 @@
 <style>
 	.region-diagram {
 		margin: 0;
-		width: min(92vw, 52rem);
-		height: min(82vh, 52rem);
-		max-width: none;
+		width: 100%;
+		height: 100%;
+		padding: var(--diagram-padding-circle, 4rem);
+		box-sizing: border-box;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 0;
+		min-height: 0;
 	}
 
 	.region-diagram svg {

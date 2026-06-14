@@ -1,4 +1,4 @@
-/** Semantic highlight tokens aligned with chart / background visuals. */
+
 export const HIGHLIGHT_TOKENS = {
 	orange: 'highlight-orange',
 	teal: 'highlight-teal',
@@ -15,7 +15,6 @@ export const HIGHLIGHT_TOKENS = {
 
 const HIGHLIGHT_RE = /\[\[([a-z-]+)\]\]([\s\S]*?)\[\[\/\]\]/g;
 
-/** @param {string} value */
 function escapeHtml(value) {
 	return value
 		.replace(/&/g, '&amp;')
@@ -24,9 +23,6 @@ function escapeHtml(value) {
 		.replace(/"/g, '&quot;');
 }
 
-/**
- * @param {string} text
- */
 export function formatSlideParagraph(text) {
 	let result = '';
 	let lastIndex = 0;
@@ -37,7 +33,7 @@ export function formatSlideParagraph(text) {
 
 		const token = match[1];
 		const inner = escapeHtml(match[2]);
-		const className = HIGHLIGHT_TOKENS[/** @type {keyof typeof HIGHLIGHT_TOKENS} */ (token)];
+		const className = HIGHLIGHT_TOKENS[ (token)];
 
 		if (className) {
 			result += `<span class="text-highlight ${className}">${inner}</span>`;

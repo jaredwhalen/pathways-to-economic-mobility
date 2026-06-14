@@ -1,6 +1,5 @@
 import csv from '$lib/data/college-cost.csv';
 
-/** Income groups low → high */
 export const COLLEGE_COST_GROUPS = [
 	'$0-30k',
 	'$30-48k',
@@ -17,9 +16,8 @@ export const COLLEGE_COST_STYLES = {
 	'$110k+': { color: '#b34cdb' }
 };
 
-/** @param {Record<string, string>[]} rows */
 export function parseCollegeCost(rows) {
-	/** @type {Map<string, { year: number, value: number }[]>} */
+	
 	const seriesMap = new Map(COLLEGE_COST_GROUPS.map((group) => [group, []]));
 	const years = new Set();
 

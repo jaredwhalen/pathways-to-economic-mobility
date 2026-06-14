@@ -188,6 +188,10 @@
 		</svelte-scroller-background>
 	</svelte-scroller-background-container>
 
+	<svelte-scroller-progress>
+		<slot name="progress"></slot>
+	</svelte-scroller-progress>
+
 	<svelte-scroller-foreground bind:this={foreground}>
 		<slot name="foreground"></slot>
 	</svelte-scroller-foreground>
@@ -206,6 +210,16 @@
 		height: 100dvh;
 		min-height: 100dvh;
 		overflow: hidden;
+	}
+
+	svelte-scroller-progress {
+		display: block;
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		z-index: 1;
+		pointer-events: none;
 	}
 
 	svelte-scroller-foreground {

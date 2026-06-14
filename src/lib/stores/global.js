@@ -9,7 +9,6 @@ export const isMobile = derived(windowWidth, ($windowWidth) =>
 
 export const isLarge = derived(windowWidth, ($windowWidth) => ($windowWidth > 1200 ? true : false));
 
-
 export const data = writable(undefined);
 
 export const featured = writable([]);
