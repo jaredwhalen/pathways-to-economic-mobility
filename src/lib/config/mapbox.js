@@ -1,6 +1,7 @@
-
 export function getMapboxToken() {
-	return import.meta.env.MAPBOX_TOKEN ?? import.meta.env.PUBLIC_MAPBOX_TOKEN ?? '';
+	return import.meta.env.DEV
+		? (import.meta.env.MAPBOX_TOKEN_DEV ?? '')
+		: (import.meta.env.MAPBOX_TOKEN_PROD ?? '');
 }
 
 export function hasMapboxToken() {
