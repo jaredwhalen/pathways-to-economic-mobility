@@ -1,80 +1,12 @@
 <script>
-	import { onMount } from 'svelte';
 	import { resources, getResourceUrl } from '$lib/data/resources.js';
 	import { resourcesIntro } from '$lib/data/copy.js';
 	import { formatSlideParagraph } from '$lib/utils/parseSlideText.js';
-	import ResourcePathway from '$lib/components/ResourcePathway.svelte';
 	import { revealOnScroll } from '$lib/actions/revealOnScroll.js';
 	import { assetUrl } from '$lib/utils/assetUrl.js';
 	import { dev } from '$app/environment';
 
 	let introHtml = $derived(formatSlideParagraph(resourcesIntro));
-
-	
-	let pathwayStage;
-
-	
-	let pathwayNodes = $state([]);
-
-	let pathRevealed = $state(false);
-
-	function updatePathwayNodes() {
-		if (!pathwayStage) return;
-
-		const stageRect = pathwayStage.getBoundingClientRect();
-		if (stageRect.width <= 0 || stageRect.height <= 0) return;
-
-		const items = pathwayStage.querySelectorAll('.pathway-item');
-		pathwayNodes = Array.from(items).map((item) => {
-			const rect = item.getBoundingClientRect();
-
-			return {
-				x: ((rect.left + rect.right) / 2 - stageRect.left) / stageRect.width * 100,
-				y: ((rect.top + rect.bottom) / 2 - stageRect.top) / stageRect.height * 100
-			};
-		});
-	}
-
-	onMount(() => {
-		if (!pathwayStage) return;
-
-		updatePathwayNodes();
-
-		const pathObserver = new IntersectionObserver(
-			([entry]) => {
-				if (entry?.isIntersecting) {
-					pathRevealed = true;
-					pathObserver.disconnect();
-				}
-			},
-			{ threshold: 0.05 }
-		);
-
-		pathObserver.observe(pathwayStage);
-
-		const resizeObserver = new ResizeObserver(updatePathwayNodes);
-		resizeObserver.observe(pathwayStage);
-
-		for (const item of pathwayStage.querySelectorAll('.pathway-item')) {
-			resizeObserver.observe(item);
-		}
-
-		for (const image of pathwayStage.querySelectorAll('.resource-media img')) {
-			image.addEventListener('load', updatePathwayNodes);
-		}
-
-		window.addEventListener('resize', updatePathwayNodes);
-
-		return () => {
-			pathObserver.disconnect();
-			resizeObserver.disconnect();
-			window.removeEventListener('resize', updatePathwayNodes);
-
-			pathwayStage?.querySelectorAll('.resource-media img').forEach((image) => {
-				image.removeEventListener('load', updatePathwayNodes);
-			});
-		};
-	});
 </script>
 
 <section id="toolkit" class="resources-section" aria-labelledby="resources-heading">
@@ -84,41 +16,27 @@
 			<p class="resources-intro">{@html introHtml}</p>
 		</header>
 
-		<div class="pathway-stage" bind:this={pathwayStage}>
-			<div class="pathway-backdrop">
-				<ResourcePathway nodes={pathwayNodes} revealed={pathRevealed} />
-			</div>
-
-			<ul class="pathway-grid">
-				{#each resources as resource (resource.id)}
-					<li
-						class="pathway-item"
-						class:pathway-item-center={resource.placement === 'center'}
-						class:pathway-item-left={resource.placement === 'left'}
-						class:pathway-item-right={resource.placement === 'right'}
-						use:revealOnScroll
+		<ul class="resources-grid">
+			{#each resources as resource (resource.id)}
+				<li class="resources-grid-item" use:revealOnScroll>
+					<a
+						class="resource-card"
+						href={getResourceUrl(resource.path)}
+						target={dev ? '_blank' : undefined}
+						rel={dev ? 'noopener noreferrer' : undefined}
 					>
-						<a
-							class="resource-row"
-							class:resource-row-left={resource.placement === 'left' || resource.placement === 'center'}
-							class:resource-row-right={resource.placement === 'right'}
-							href={getResourceUrl(resource.path)}
-							target={dev ? '_blank' : undefined}
-							rel={dev ? 'noopener noreferrer' : undefined}
-						>
-							<div class="resource-media">
-								<img src={assetUrl(resource.thumbnail)} alt="" loading="lazy" decoding="async" />
-							</div>
-							<div class="resource-body">
-								<h3 class="resource-title">{resource.title}</h3>
-								<p class="resource-description">{resource.description}</p>
-								<span class="resource-link-label">View resource</span>
-							</div>
-						</a>
-					</li>
-				{/each}
-			</ul>
-		</div>
+						<div class="resource-media">
+							<img src={assetUrl(resource.thumbnail)} alt="" loading="lazy" decoding="async" />
+						</div>
+						<div class="resource-body">
+							<h3 class="resource-title">{resource.title}</h3>
+							<p class="resource-description">{resource.description}</p>
+							<span class="resource-link-label">View resource</span>
+						</div>
+					</a>
+				</li>
+			{/each}
+		</ul>
 	</div>
 </section>
 
@@ -171,60 +89,32 @@
 		color: var(--color-navy);
 	}
 
-	.pathway-stage {
-		position: relative;
-		isolation: isolate;
-	}
-
-	.pathway-backdrop {
-		position: absolute;
-		inset: 0;
-		z-index: 0;
-		pointer-events: none;
-	}
-
-	.pathway-grid {
-		position: relative;
-		z-index: 1;
+	.resources-grid {
 		display: grid;
-		grid-template-columns: repeat(12, minmax(0, 1fr));
-		gap: clamp(3rem, 7vw, 5rem) clamp(1rem, 2vw, 1.5rem);
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: clamp(1.25rem, 2.5vw, 1.75rem);
 		margin: 0;
 		padding: 0;
 		list-style: none;
 	}
 
-	.pathway-item {
+	.resources-grid-item {
 		min-width: 0;
 		opacity: 0;
+		transform: translateY(1.5rem);
 		transition:
 			opacity 700ms ease,
 			transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
 	}
 
-	.pathway-item-center {
-		grid-column: 2 / 12;
-		transform: translateY(2rem);
-	}
-
-	.pathway-item-left {
-		grid-column: 1 / 8;
-		transform: translate(-1.75rem, 2rem);
-	}
-
-	.pathway-item-right {
-		grid-column: 6 / 13;
-		transform: translate(1.75rem, 2rem);
-	}
-
-	.pathway-item:global(.is-revealed) {
+	.resources-grid-item:global(.is-revealed) {
 		opacity: 1;
-		transform: translate(0, 0);
+		transform: translateY(0);
 	}
 
-	.resource-row {
-		display: grid;
-		align-items: stretch;
+	.resource-card {
+		display: flex;
+		flex-direction: column;
 		height: 100%;
 		text-decoration: none;
 		color: inherit;
@@ -238,61 +128,51 @@
 		overflow: hidden;
 	}
 
-	.resource-row-left {
-		grid-template-columns: minmax(7.5rem, 38%) minmax(0, 1fr);
-	}
-
-	.resource-row-right {
-		grid-template-columns: minmax(0, 1fr) minmax(7.5rem, 38%);
-	}
-
-	.resource-row-right .resource-media {
-		order: 2;
-	}
-
-	.resource-row-right .resource-body {
-		order: 1;
-	}
-
-	.resource-row:hover,
-	.resource-row:focus-visible {
+	.resource-card:hover,
+	.resource-card:focus-visible {
 		border-color: var(--color-teal);
 		box-shadow: 0 8px 32px rgba(3, 31, 67, 0.14);
 		transform: translateY(-2px);
 		outline: none;
 	}
 
-	.resource-row:focus-visible {
+	.resource-card:focus-visible {
 		box-shadow:
 			0 8px 32px rgba(3, 31, 67, 0.14),
 			0 0 0 3px rgba(49, 135, 147, 0.35);
 	}
 
 	.resource-media {
-		min-height: 9rem;
+		aspect-ratio: 16 / 10;
 		background: var(--color-teal-dark);
+		overflow: hidden;
 	}
 
 	.resource-media img {
 		display: block;
 		width: 100%;
 		height: 100%;
-		min-height: inherit;
 		object-fit: cover;
+		transition: transform 280ms ease;
+	}
+
+	.resource-card:hover .resource-media img,
+	.resource-card:focus-visible .resource-media img {
+		transform: scale(1.03);
 	}
 
 	.resource-body {
 		display: flex;
+		flex: 1;
 		flex-direction: column;
-		justify-content: center;
 		gap: 0.5rem;
-		padding: clamp(1rem, 2.5vw, 1.5rem);
+		padding: clamp(1rem, 2vw, 1.25rem);
 	}
 
 	.resource-title {
 		margin: 0;
 		font-family: var(--font-display);
-		font-size: clamp(1.0625rem, 2vw, 1.25rem);
+		font-size: clamp(1.0625rem, 2vw, 1.2rem);
 		font-weight: var(--font-weight-regular);
 		line-height: 1.25;
 		color: var(--color-navy);
@@ -300,6 +180,7 @@
 
 	.resource-description {
 		margin: 0;
+		flex: 1;
 		font-size: clamp(0.9375rem, 1.6vw, 1rem);
 		line-height: 1.45;
 		color: var(--color-navy);
@@ -317,59 +198,31 @@
 
 	@media (prefers-reduced-motion: reduce) {
 		.resources-header,
-		.pathway-item {
+		.resources-grid-item {
 			opacity: 1;
 			transform: none;
 			transition: none;
 		}
-	}
 
-	@media (max-width: 900px) {
-		.pathway-grid {
-			gap: clamp(2.5rem, 6.5vw, 4rem) clamp(1rem, 2vw, 1.5rem);
+		.resource-media img {
+			transition: none;
 		}
 
-		.pathway-item-center,
-		.pathway-item-left,
-		.pathway-item-right {
-			grid-column: 1 / -1;
-		}
-
-		.pathway-item-left {
-			transform: translate(-1.25rem, 2rem);
-		}
-
-		.pathway-item-right {
-			transform: translate(1.25rem, 2rem);
-		}
-
-		.pathway-item-left:global(.is-revealed),
-		.pathway-item-right:global(.is-revealed) {
-			transform: translate(0, 0);
+		.resource-card:hover .resource-media img,
+		.resource-card:focus-visible .resource-media img {
+			transform: none;
 		}
 	}
 
-	@media (max-width: 600px) {
-		.pathway-backdrop {
-			opacity: 0.65;
+	@media (max-width: 960px) {
+		.resources-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
 		}
+	}
 
-		.pathway-item-left,
-		.pathway-item-right {
-			transform: translateY(2rem);
-		}
-
-		.resource-row-left,
-		.resource-row-right {
+	@media (max-width: 560px) {
+		.resources-grid {
 			grid-template-columns: 1fr;
-		}
-
-		.resource-row-right .resource-media {
-			order: -1;
-		}
-
-		.resource-media {
-			min-height: 11rem;
 		}
 	}
 </style>
