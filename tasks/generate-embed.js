@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { readFileSync, writeFileSync, existsSync } from 'fs';
-import { join, dirname } from 'path';
+import { join, dirname, relative } from 'path';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -9,16 +9,17 @@ const __dirname = dirname(__filename);
 
 import projectConfig from '../src/lib/config/project.config.js';
 
-const DIST_PATH = join(__dirname, '..', 'dist');
+const ROOT_PATH = join(__dirname, '..');
+const DIST_PATH = join(ROOT_PATH, 'dist');
 const INDEX_HTML_PATH = join(DIST_PATH, 'index.html');
-const OUTPUT_PATH = join(__dirname, '..', 'wordpress-embed.html');
+const OUTPUT_PATH = join(ROOT_PATH, 'wordpress-embed.html');
 
 const JSDELIVR_BASE_URL = projectConfig.build.cdnBaseUrl.replace(/\/?$/, '/');
 const EMBED_CONTAINER_ID = projectConfig.build.embedContainerId;
 
 function extractFileInfo(htmlContent) {
-	const cssMatch = htmlContent.match(/href="\.\/_app\/immutable\/assets\/([^"]+\.css)"/);
-	const cssFile = cssMatch ? cssMatch[1] : null;
+	const cssMatches = htmlContent.matchAll(/href="\.\/_app\/immutable\/assets\/([^"]+\.css)"/g);
+	const cssFiles = [...new Set(Array.from(cssMatches, (match) => match[1]))];
 
 	const modulepreloadMatches = htmlContent.matchAll(/href="\.\/_app\/immutable\/([^"]+\.js)"/g);
 	const modulepreloadFiles = Array.from(modulepreloadMatches).map((match) => match[1]);
@@ -40,12 +41,35 @@ function extractFileInfo(htmlContent) {
 	const configVar = configMatch[1];
 
 	return {
-		cssFile,
+		cssFiles,
 		modulepreloadFiles,
 		startFile,
 		appFile,
 		configVar
 	};
+}
+
+function distAssetPaths(info) {
+	const paths = [
+		...info.cssFiles.map((file) => join(DIST_PATH, '_app/immutable/assets', file)),
+		join(DIST_PATH, '_app/immutable/entry', info.startFile),
+		join(DIST_PATH, '_app/immutable/entry', info.appFile),
+		...info.modulepreloadFiles.map((file) => join(DIST_PATH, '_app/immutable', file))
+	];
+
+	return [...new Set(paths.filter(Boolean))];
+}
+
+function assertDistAssets(info) {
+	const missing = distAssetPaths(info).filter((path) => !existsSync(path));
+
+	if (missing.length) {
+		console.error('❌ dist/ is missing assets referenced by the embed:');
+		for (const path of missing) {
+			console.error(`   - ${relative(ROOT_PATH, path)}`);
+		}
+		process.exit(1);
+	}
 }
 
 function containerAttributes() {
@@ -58,18 +82,18 @@ function containerAttributes() {
 }
 
 function generateEmbedHTML(info) {
-	const { cssFile, modulepreloadFiles, startFile, appFile, configVar } = info;
+	const { cssFiles, modulepreloadFiles, startFile, appFile, configVar } = info;
 
 	return `<!-- WordPress embed bundle (see src/lib/config/project.config.js → build) -->
 <!--
 1. npm run build:embed
-2. Commit and push the dist/ folder (or your CDN source)
+2. Commit and push dist/ and wordpress-embed.html
 3. Paste this block into a Custom HTML block
 
 CDN base: ${JSDELIVR_BASE_URL}
 -->
 
-<link href="${JSDELIVR_BASE_URL}_app/immutable/assets/${cssFile}" rel="stylesheet">
+${cssFiles.map((file) => `<link href="${JSDELIVR_BASE_URL}_app/immutable/assets/${file}" rel="stylesheet">`).join('\n\n')}
 
 ${modulepreloadFiles.map((file) => `<link rel="modulepreload" href="${JSDELIVR_BASE_URL}_app/immutable/${file}">`).join('\n')}
 
@@ -116,13 +140,22 @@ function main() {
 
 	const htmlContent = readFileSync(INDEX_HTML_PATH, 'utf-8');
 	const fileInfo = extractFileInfo(htmlContent);
-	const embedHTML = generateEmbedHTML(fileInfo);
 
+	if (!fileInfo.cssFiles.length || !fileInfo.startFile || !fileInfo.appFile) {
+		console.error('❌ Could not extract embed asset paths from dist/index.html');
+		process.exit(1);
+	}
+
+	assertDistAssets(fileInfo);
+
+	const embedHTML = generateEmbedHTML(fileInfo);
 	writeFileSync(OUTPUT_PATH, embedHTML);
 
 	console.log('✅ wordpress-embed.html written');
 	console.log(`   CDN: ${JSDELIVR_BASE_URL}`);
 	console.log(`   Container: #${EMBED_CONTAINER_ID}`);
+	console.log(`   Assets checked: ${distAssetPaths(fileInfo).length}`);
+	console.log('📦 Commit and push dist/ + wordpress-embed.html so jsDelivr can serve the embed.');
 }
 
 main();

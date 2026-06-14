@@ -44,7 +44,9 @@ Build the site, then generate the embed HTML (reads `dist/index.html` and `src/l
 npm run build:embed
 ```
 
-This writes `dist/` and `wordpress-embed.html`. `tasks/generate-embed.js` uses `build.cdnBaseUrl` from `project.config.js`; that URL must match where `dist/` is actually hosted (for example jsDelivr’s `https://cdn.jsdelivr.net/gh/<org>/<repo>@<branch>/dist/`).
+This writes `dist/` and `wordpress-embed.html`. `tasks/generate-embed.js` uses `build.cdnBaseUrl` from `project.config.js`; that URL must match where `dist/` is actually hosted (for example jsDelivr’s `https://cdn.jsdelivr.net/gh/<org>/<repo>@<branch>/dist/`). The script verifies every asset referenced in the embed exists under `dist/` before writing `wordpress-embed.html`.
+
+`dist/` is tracked in git (not gitignored). After each embed build, commit and push the full `dist/` folder — jsDelivr only serves files that exist on GitHub.
 
 In WordPress, add a Custom HTML block and paste the contents of `wordpress-embed.html`.
 
@@ -52,7 +54,7 @@ In WordPress, add a Custom HTML block and paste the contents of `wordpress-embed
 
 If you clone this repo, use it as a GitHub template, or fork it for a new story, run **`npm run setup`** before you rely on embed output (or hand-edit the same `YOUR_*` tokens in `src/lib/config/project.config.js`). Otherwise `cdnBaseUrl` will still point at placeholder org/repo paths and the generated `wordpress-embed.html` will load the wrong assets.
 
-Typical flow: run `setup` → commit → `npm run build:embed` → commit and push **`dist/`** (and `wordpress-embed.html` if you track it) to the branch your CDN reads (often `main`). jsDelivr and similar CDNs resolve `gh/org/repo@branch/dist/` only after those files exist on GitHub.
+Typical flow: run `setup` → commit → `npm run build:embed` → commit and push **`dist/`** and `wordpress-embed.html` to the branch your CDN reads (often `main`). jsDelivr resolves `gh/org/repo@branch/dist/` only after those files exist on GitHub. Purge jsDelivr if you need an immediate cache refresh after pushing.
 
 ## Scripts
 
