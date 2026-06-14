@@ -145,26 +145,14 @@ ${modulepreloadFiles.map((file) => `<link rel="modulepreload" href="${baseUrl}_a
 <script>
 (function () {
 	const BASE_URL = "${baseUrl}";
-
-	// Elementor runs pasted HTML in the editor before the live page is saved.
-	if (typeof window.elementorFrontend !== 'undefined' && window.elementorFrontend.isEditMode?.()) {
-		return;
-	}
+	window.${configVar} = { base: BASE_URL, assets: BASE_URL };
 
 	const container = document.getElementById("${EMBED_CONTAINER_ID}");
-	if (!container) return;
 
-	window.${configVar} = { base: BASE_URL, assets: BASE_URL, env: null };
-
-	import(BASE_URL + '_app/env.js')
-		.then(({ env }) => {
-			window.${configVar}.env = env;
-
-			return Promise.all([
-				import(BASE_URL + '_app/immutable/entry/${startFile}'),
-				import(BASE_URL + '_app/immutable/entry/${appFile}')
-			]);
-		})
+	Promise.all([
+		import(BASE_URL + '_app/immutable/entry/${startFile}'),
+		import(BASE_URL + '_app/immutable/entry/${appFile}')
+	])
 		.then(([kit, app]) => {
 			kit.start(app, container, {
 				node_ids: [0, 2],
@@ -175,7 +163,7 @@ ${modulepreloadFiles.map((file) => `<link rel="modulepreload" href="${baseUrl}_a
 		})
 		.catch((error) => {
 			console.error('Svelte app failed to load:', error);
-			container.innerHTML = '<p>Error loading app. Run npm run publish, then paste the updated wordpress-embed.html.</p>';
+			container.innerHTML = '<p>Error loading app. Check the CDN URL in src/lib/config/project.config.js and that dist/ is published.</p>';
 		});
 })();
 </script>`;
