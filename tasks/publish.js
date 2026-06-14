@@ -4,7 +4,9 @@ import { cpSync, rmSync, writeFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { spawnSync } from 'child_process';
 import { fileURLToPath } from 'url';
+import projectConfig from '../src/lib/config/project.config.js';
 import { runGenerateEmbed } from './generate-embed.js';
+import { purgeDistOnJsDelivr } from './purge-jsdelivr.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -12,10 +14,12 @@ const __dirname = dirname(__filename);
 const ROOT_PATH = join(__dirname, '..');
 const DIST_PATH = join(ROOT_PATH, 'dist');
 const DOCS_PATH = join(ROOT_PATH, 'docs');
+const CDN_BASE_URL = projectConfig.build.cdnBaseUrl;
 
 const args = new Set(process.argv.slice(2));
 const noPush = args.has('--no-push');
 const noGit = args.has('--no-git');
+const noPurge = args.has('--no-purge');
 
 function run(command, commandArgs, { allowFailure = false } = {}) {
 	const result = spawnSync(command, commandArgs, {
@@ -63,10 +67,27 @@ function syncDocsFromDist() {
 	console.log('✅ docs/ updated');
 }
 
-function commitAndPush() {
+async function purgeCdn() {
+	if (noPurge) {
+		console.log('⏭️  Skipping jsDelivr purge (--no-purge).');
+		return;
+	}
+
+	try {
+		await purgeDistOnJsDelivr({
+			distPath: DIST_PATH,
+			cdnBaseUrl: CDN_BASE_URL
+		});
+	} catch (error) {
+		console.warn(`⚠️  jsDelivr purge failed: ${error.message}`);
+		console.warn('   Branch files usually refresh within ~12 hours without a purge.');
+	}
+}
+
+async function commitAndPush() {
 	if (!hasChanges(['dist', 'docs', 'wordpress-embed.html'])) {
 		console.log('ℹ️  No publish output changes to commit.');
-		return;
+		return false;
 	}
 
 	console.log('📦 Staging dist/, docs/, and wordpress-embed.html...');
@@ -77,15 +98,16 @@ function commitAndPush() {
 
 	if (noPush) {
 		console.log('⏭️  Skipping push (--no-push).');
-		return;
+		return false;
 	}
 
 	console.log('🚀 Pushing to origin...');
 	run('git', ['push']);
 	console.log('✅ Published. jsDelivr and GitHub Pages will update after GitHub receives the push.');
+	return true;
 }
 
-function main() {
+async function main() {
 	build();
 	generateEmbed();
 	syncDocsFromDist();
@@ -96,7 +118,11 @@ function main() {
 		return;
 	}
 
-	commitAndPush();
+	const pushed = await commitAndPush();
+
+	if (pushed) {
+		await purgeCdn();
+	}
 }
 
 main();

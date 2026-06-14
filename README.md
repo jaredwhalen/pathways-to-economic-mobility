@@ -51,13 +51,15 @@ This will:
 3. Copy `dist/` → `docs/` for GitHub Pages (adds `.nojekyll`)
 4. Commit `dist/`, `docs/`, and `wordpress-embed.html`
 5. Push to `origin`
+6. Purge stable jsDelivr paths (video, images, fonts, `embed-bootstrap.js`, etc.) so `@main` serves the latest files immediately
 
 Flags:
 
 - `npm run publish -- --no-push` — build, sync, and commit locally without pushing
 - `npm run publish -- --no-git` — build and sync only; skip commit/push
+- `npm run publish -- --no-purge` — skip the jsDelivr cache purge after push
 
-After publishing, paste `wordpress-embed.html` into WordPress if the asset hashes changed. jsDelivr reads `dist/` from GitHub (`build.cdnBaseUrl` in `project.config.js`). GitHub Pages serves `docs/`.
+After publishing, paste `wordpress-embed.html` into WordPress if the asset hashes changed. jsDelivr reads `dist/` from GitHub (`build.cdnBaseUrl` in `project.config.js`). GitHub Pages serves `docs/`. Hashed bundles under `_app/immutable/` get new filenames each build; purge targets stable paths like media and `embed-bootstrap.js`.
 
 ## WordPress embed
 
@@ -92,4 +94,5 @@ If you clone this repo, use it as a GitHub template, or fork it for a new story,
 - `src/lib/data/copy.json` — Slide copy (`id` + `text`)
 - `tasks/setup.js` — Clone-time slug / title / GitHub URL wiring
 - `tasks/generate-embed.js` — Embeds script for CMS injection
-- `tasks/publish.js` — Build, embed, GitHub Pages sync, and push
+- `tasks/publish.js` — Build, embed, GitHub Pages sync, push, and jsDelivr purge
+- `tasks/purge-jsdelivr.js` — Purge stable `dist/` paths on jsDelivr after publish

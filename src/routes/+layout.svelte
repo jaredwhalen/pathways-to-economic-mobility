@@ -5,6 +5,7 @@
 
 	let { children } = $props();
 
+	const isStandalone = project.document.mode === 'standalone';
 	const isColumn = project.layout.mode === 'column';
 	const layoutStyle = `
 		--layout-max-width: ${isColumn ? `${project.layout.maxWidthPx}px` : 'none'};
@@ -13,19 +14,21 @@
 </script>
 
 <svelte:head>
-	<meta charset="utf-8" />
-	<link rel="icon" href={favicon} />
-	<title>{project.meta.title}</title>
-	<meta name="description" content={project.meta.description} />
+	{#if isStandalone}
+		<meta charset="utf-8" />
+		<link rel="icon" href={favicon} />
+		<title>{project.meta.title}</title>
+		<meta name="description" content={project.meta.description} />
 
-	{#if project.document.includeViewportMeta}
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	{/if}
+		{#if project.document.includeViewportMeta}
+			<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		{/if}
 
-	{#if project.document.mode === 'standalone' && project.document.includeGoogleFonts}
-		<link rel="preconnect" href="https://fonts.googleapis.com" />
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-		<link href={project.document.googleFontHref} rel="stylesheet" />
+		{#if project.document.includeGoogleFonts}
+			<link rel="preconnect" href="https://fonts.googleapis.com" />
+			<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+			<link href={project.document.googleFontHref} rel="stylesheet" />
+		{/if}
 	{/if}
 </svelte:head>
 
@@ -53,6 +56,9 @@
 
 	:global(html, body) {
 		margin: 0;
+	}
+
+	:global(html:has([data-document='standalone']), body:has([data-document='standalone'])) {
 		background: #f3f3f3;
 		color: var(--color-text);
 	}

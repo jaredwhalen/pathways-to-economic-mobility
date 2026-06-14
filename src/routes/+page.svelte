@@ -2,8 +2,10 @@
 	import Index from '$lib/components/Index.svelte';
 	import { dev } from '$app/environment';
 	import { env } from '$env/dynamic/public';
+	import project from '$lib/config/project.js';
 
-	const base = dev ? '' : (env?.PUBLIC_CDN_URL ?? '');
+	const isStandalone = project.document.mode === 'standalone';
+	const base = isStandalone && !dev ? (env?.PUBLIC_CDN_URL ?? '') : '';
 </script>
 
 <svelte:head>
