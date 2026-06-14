@@ -8,8 +8,8 @@ const project = {
 	},
 
 	document: {
-		mode: 'inline', // WordPress host owns page meta, typography, and favicon
-		includeViewportMeta: true, // standalone only; inline embed leaves these to the host page
+		mode: 'inline', // WordPress host owns page title, description, and favicon
+		includeViewportMeta: true, // always inject viewport so embed rescales on mobile
 		includeGoogleFonts: true, // only when mode is standalone
 		googleFontHref:
 			'https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,700;1,400&family=Roboto:ital,wght@0,300;0,400;1,300&display=swap'

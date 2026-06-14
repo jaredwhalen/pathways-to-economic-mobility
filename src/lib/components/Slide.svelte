@@ -58,7 +58,7 @@
 		position: relative;
 		isolation: isolate;
 		width: 100%;
-		max-width: 30rem;
+		max-width: 35rem;
 		padding: 1.5rem 1.75rem;
 		font-family: var(--font-body);
 		background: transparent;
@@ -93,17 +93,6 @@
 		border: 1px solid var(--slide-surface-border-outer, var(--color-teal-light));
 		border-radius: calc(2px + var(--slide-surface-border-gap, 5px));
 		pointer-events: none;
-	}
-
-	.slide-text {
-		font-size: clamp(1.125rem, 2.25vw, 1.3125rem);
-		line-height: 1.6;
-		margin: 0 0 0.75rem 0;
-		color: var(--color-navy);
-	}
-
-	.slide-text:last-child {
-		margin-bottom: 0;
 	}
 
 	.slide-text :global(.text-highlight) {
@@ -177,10 +166,6 @@
 		.slide {
 			height: 150vh;
 			padding: 0 0.75rem;
-		}
-
-		.slide-text {
-			font-size: 1.125rem;
 		}
 	}
 

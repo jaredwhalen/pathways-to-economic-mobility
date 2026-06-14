@@ -46,6 +46,10 @@
 	--font-weight-light: 300;
 	--font-weight-regular: 400;
 	--font-weight-bold: 700;
+	--text-body-size: clamp(1.125rem, 1.2658227848vw + 0.5174050633rem, 1.625rem);
+	--text-body-leading: clamp(1.5rem, 1.8987341772vw + 0.5886075949rem, 2.25rem);
+	--text-body-color: rgba(23, 23, 23, 0.75);
+	--text-body-margin-bottom: 32px;
 
 	/* Layout */
 	--content-max-width: 1280px;
@@ -56,7 +60,6 @@
 	/* Defaults */
 	font-family: var(--font-body);
 	font-weight: var(--font-weight-light);
-	line-height: 1.7;
 	color: var(--color-navy);
 	box-sizing: border-box;
 	width: 100%;
@@ -89,10 +92,26 @@
 	font-weight: var(--font-weight-bold);
 }
 
-.emcs-scroll :is(p, li, .text-body) {
+.emcs-scroll :is(p, .text-body) {
+	margin: 0;
+	margin-bottom: var(--text-body-margin-bottom);
 	font-family: var(--font-body);
 	font-weight: var(--font-weight-light);
-	line-height: 1.7;
+	font-size: var(--text-body-size);
+	line-height: var(--text-body-leading);
+	color: var(--text-body-color);
+}
+
+.emcs-scroll :is(p, .text-body):last-child {
+	margin-bottom: 0;
+}
+
+.emcs-scroll li {
+	font-family: var(--font-body);
+	font-weight: var(--font-weight-light);
+	font-size: var(--text-body-size);
+	line-height: var(--text-body-leading);
+	color: var(--text-body-color);
 }
 
 .emcs-scroll .text-body-regular {
@@ -126,7 +145,7 @@
 
 .emcs-scroll.theme-light {
 	color: var(--color-navy);
-	--slide-surface-bg: rgba(255, 255, 255, 0.8);
+	--slide-surface-bg: rgba(255, 255, 255, 0.75);
 	--slide-surface-blur: 10px;
 	--slide-surface-shadow: 0 2px 20px rgba(3, 31, 67, 0.08);
 	--slide-surface-border-outer: var(--color-teal-light);

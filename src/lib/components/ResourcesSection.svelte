@@ -82,13 +82,6 @@
 		color: var(--color-navy);
 	}
 
-	.resources-intro {
-		margin: 0;
-		font-size: clamp(1rem, 2vw, 1.125rem);
-		line-height: 1.55;
-		color: var(--color-navy);
-	}
-
 	.resources-grid {
 		display: grid;
 		grid-template-columns: repeat(3, minmax(0, 1fr));
