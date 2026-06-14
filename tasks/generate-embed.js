@@ -74,8 +74,16 @@ function containerAttributes() {
 	if (mode === 'column') {
 		styles.push(`max-width:${maxWidthPx}px`, 'margin-inline:0');
 	}
-	return `id="${EMBED_CONTAINER_ID}" style="${styles.join(';')}"`;
+	return `id="${EMBED_CONTAINER_ID}" class="full-bleed" style="${styles.join(';')}"`;
 }
+
+const EMBED_STYLES = `<style>
+.full-bleed {
+	width: 100vw;
+	margin-left: calc(50% - 50vw);
+	margin-right: calc(50% - 50vw);
+}
+</style>`;
 
 export function generateEmbedHTML(info) {
 	const { cssFiles, modulepreloadFiles, startFile, appFile, configVar } = info;
@@ -87,6 +95,8 @@ export function generateEmbedHTML(info) {
 
 CDN base: ${JSDELIVR_BASE_URL}
 -->
+
+${EMBED_STYLES}
 
 ${cssFiles.map((file) => `<link href="${JSDELIVR_BASE_URL}_app/immutable/assets/${file}" rel="stylesheet">`).join('\n\n')}
 
