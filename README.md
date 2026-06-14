@@ -36,25 +36,44 @@ Edit `src/lib/config/project.config.js` (import it elsewhere as `import project 
 | **layout** | `mode: 'column'` applies `maxWidthPx` with content aligned to the start (not centered). `mode: 'full'` is full-bleed width on the app root. `horizontalPadding` is a CSS length on that root (use `'0'` for flush edges). |
 | **build** | `cdnBaseUrl` (your published `dist/` URL) and `embedContainerId` used when generating the WordPress embed file. |
 
+## Publish
+
+One command builds, generates the WordPress embed, syncs GitHub Pages, and pushes to GitHub (which updates jsDelivr and Pages):
+
+```bash
+npm run publish
+```
+
+This will:
+
+1. Build into `dist/`
+2. Write `wordpress-embed.html` (validated against `dist/`)
+3. Copy `dist/` → `docs/` for GitHub Pages (adds `.nojekyll`)
+4. Commit `dist/`, `docs/`, and `wordpress-embed.html`
+5. Push to `origin`
+
+Flags:
+
+- `npm run publish -- --no-push` — build, sync, and commit locally without pushing
+- `npm run publish -- --no-git` — build and sync only; skip commit/push
+
+After publishing, paste `wordpress-embed.html` into WordPress if the asset hashes changed. jsDelivr reads `dist/` from GitHub (`build.cdnBaseUrl` in `project.config.js`). GitHub Pages serves `docs/`.
+
 ## WordPress embed
 
-Build the site, then generate the embed HTML (reads `dist/index.html` and `src/lib/config/project.config.js`):
+For local embed generation without publishing:
 
 ```bash
 npm run build:embed
 ```
 
-This writes `dist/` and `wordpress-embed.html`. `tasks/generate-embed.js` uses `build.cdnBaseUrl` from `project.config.js`; that URL must match where `dist/` is actually hosted (for example jsDelivr’s `https://cdn.jsdelivr.net/gh/<org>/<repo>@<branch>/dist/`). The script verifies every asset referenced in the embed exists under `dist/` before writing `wordpress-embed.html`.
-
-`dist/` is tracked in git (not gitignored). After each embed build, commit and push the full `dist/` folder — jsDelivr only serves files that exist on GitHub.
+`tasks/generate-embed.js` uses `build.cdnBaseUrl` from `project.config.js` and verifies every asset referenced in the embed exists under `dist/` before writing `wordpress-embed.html`.
 
 In WordPress, add a Custom HTML block and paste the contents of `wordpress-embed.html`.
 
-### Forks, templates, and `build:embed`
+### Forks, templates, and publish
 
-If you clone this repo, use it as a GitHub template, or fork it for a new story, run **`npm run setup`** before you rely on embed output (or hand-edit the same `YOUR_*` tokens in `src/lib/config/project.config.js`). Otherwise `cdnBaseUrl` will still point at placeholder org/repo paths and the generated `wordpress-embed.html` will load the wrong assets.
-
-Typical flow: run `setup` → commit → `npm run build:embed` → commit and push **`dist/`** and `wordpress-embed.html` to the branch your CDN reads (often `main`). jsDelivr resolves `gh/org/repo@branch/dist/` only after those files exist on GitHub. Purge jsDelivr if you need an immediate cache refresh after pushing.
+If you clone this repo, use it as a GitHub template, or fork it for a new story, run **`npm run setup`** before you publish (or hand-edit the same `YOUR_*` tokens in `src/lib/config/project.config.js`). Otherwise `cdnBaseUrl` will still point at placeholder org/repo paths and the generated `wordpress-embed.html` will load the wrong assets.
 
 ## Scripts
 
@@ -62,6 +81,7 @@ Typical flow: run `setup` → commit → `npm run build:embed` → commit and pu
 - `npm run dev` — Vite dev server
 - `npm run build` — Production build into `dist/`
 - `npm run build:embed` — `build` then `node tasks/generate-embed.js`
+- `npm run publish` — build, embed, sync `docs/`, commit, and push
 - `npm run preview` — Local preview of the production build
 
 ## Project layout (source)
@@ -72,3 +92,4 @@ Typical flow: run `setup` → commit → `npm run build:embed` → commit and pu
 - `src/lib/data/copy.json` — Slide copy (`id` + `text`)
 - `tasks/setup.js` — Clone-time slug / title / GitHub URL wiring
 - `tasks/generate-embed.js` — Embeds script for CMS injection
+- `tasks/publish.js` — Build, embed, GitHub Pages sync, and push

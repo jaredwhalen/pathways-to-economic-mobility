@@ -17,7 +17,7 @@ const OUTPUT_PATH = join(ROOT_PATH, 'wordpress-embed.html');
 const JSDELIVR_BASE_URL = projectConfig.build.cdnBaseUrl.replace(/\/?$/, '/');
 const EMBED_CONTAINER_ID = projectConfig.build.embedContainerId;
 
-function extractFileInfo(htmlContent) {
+export function extractFileInfo(htmlContent) {
 	const cssMatches = htmlContent.matchAll(/href="\.\/_app\/immutable\/assets\/([^"]+\.css)"/g);
 	const cssFiles = [...new Set(Array.from(cssMatches, (match) => match[1]))];
 
@@ -35,8 +35,7 @@ function extractFileInfo(htmlContent) {
 
 	const configMatch = htmlContent.match(/(__sveltekit_\w+)\s*=/);
 	if (!configMatch) {
-		console.error('❌ Could not find SvelteKit configuration variable in dist/index.html');
-		process.exit(1);
+		throw new Error('Could not find SvelteKit configuration variable in dist/index.html');
 	}
 	const configVar = configMatch[1];
 
@@ -49,26 +48,23 @@ function extractFileInfo(htmlContent) {
 	};
 }
 
-function distAssetPaths(info) {
+export function distAssetPaths(info, distPath = DIST_PATH) {
 	const paths = [
-		...info.cssFiles.map((file) => join(DIST_PATH, '_app/immutable/assets', file)),
-		join(DIST_PATH, '_app/immutable/entry', info.startFile),
-		join(DIST_PATH, '_app/immutable/entry', info.appFile),
-		...info.modulepreloadFiles.map((file) => join(DIST_PATH, '_app/immutable', file))
+		...info.cssFiles.map((file) => join(distPath, '_app/immutable/assets', file)),
+		join(distPath, '_app/immutable/entry', info.startFile),
+		join(distPath, '_app/immutable/entry', info.appFile),
+		...info.modulepreloadFiles.map((file) => join(distPath, '_app/immutable', file))
 	];
 
 	return [...new Set(paths.filter(Boolean))];
 }
 
-function assertDistAssets(info) {
-	const missing = distAssetPaths(info).filter((path) => !existsSync(path));
+export function assertDistAssets(info, distPath = DIST_PATH) {
+	const missing = distAssetPaths(info, distPath).filter((path) => !existsSync(path));
 
 	if (missing.length) {
-		console.error('❌ dist/ is missing assets referenced by the embed:');
-		for (const path of missing) {
-			console.error(`   - ${relative(ROOT_PATH, path)}`);
-		}
-		process.exit(1);
+		const lines = missing.map((path) => `   - ${relative(ROOT_PATH, path)}`).join('\n');
+		throw new Error(`dist/ is missing assets referenced by the embed:\n${lines}`);
 	}
 }
 
@@ -81,14 +77,13 @@ function containerAttributes() {
 	return `id="${EMBED_CONTAINER_ID}" style="${styles.join(';')}"`;
 }
 
-function generateEmbedHTML(info) {
+export function generateEmbedHTML(info) {
 	const { cssFiles, modulepreloadFiles, startFile, appFile, configVar } = info;
 
 	return `<!-- WordPress embed bundle (see src/lib/config/project.config.js → build) -->
 <!--
-1. npm run build:embed
-2. Commit and push dist/ and wordpress-embed.html
-3. Paste this block into a Custom HTML block
+1. npm run publish
+2. Paste this block into a Custom HTML block
 
 CDN base: ${JSDELIVR_BASE_URL}
 -->
@@ -130,32 +125,52 @@ ${modulepreloadFiles.map((file) => `<link rel="modulepreload" href="${JSDELIVR_B
 </script>`;
 }
 
-function main() {
-	console.log('🔍 Checking for dist/index.html...');
+export function runGenerateEmbed({
+	distPath = DIST_PATH,
+	outputPath = OUTPUT_PATH,
+	quiet = false
+} = {}) {
+	const indexHtmlPath = join(distPath, 'index.html');
 
-	if (!existsSync(INDEX_HTML_PATH)) {
-		console.error('❌ dist/index.html not found. Run "npm run build" first.');
-		process.exit(1);
+	if (!existsSync(indexHtmlPath)) {
+		throw new Error('dist/index.html not found. Run "npm run build" first.');
 	}
 
-	const htmlContent = readFileSync(INDEX_HTML_PATH, 'utf-8');
+	const htmlContent = readFileSync(indexHtmlPath, 'utf-8');
 	const fileInfo = extractFileInfo(htmlContent);
 
 	if (!fileInfo.cssFiles.length || !fileInfo.startFile || !fileInfo.appFile) {
-		console.error('❌ Could not extract embed asset paths from dist/index.html');
-		process.exit(1);
+		throw new Error('Could not extract embed asset paths from dist/index.html');
 	}
 
-	assertDistAssets(fileInfo);
+	assertDistAssets(fileInfo, distPath);
 
 	const embedHTML = generateEmbedHTML(fileInfo);
-	writeFileSync(OUTPUT_PATH, embedHTML);
+	writeFileSync(outputPath, embedHTML);
 
-	console.log('✅ wordpress-embed.html written');
-	console.log(`   CDN: ${JSDELIVR_BASE_URL}`);
-	console.log(`   Container: #${EMBED_CONTAINER_ID}`);
-	console.log(`   Assets checked: ${distAssetPaths(fileInfo).length}`);
-	console.log('📦 Commit and push dist/ + wordpress-embed.html so jsDelivr can serve the embed.');
+	if (!quiet) {
+		console.log('✅ wordpress-embed.html written');
+		console.log(`   CDN: ${JSDELIVR_BASE_URL}`);
+		console.log(`   Container: #${EMBED_CONTAINER_ID}`);
+		console.log(`   Assets checked: ${distAssetPaths(fileInfo, distPath).length}`);
+	}
+
+	return fileInfo;
 }
 
-main();
+function main() {
+	console.log('🔍 Checking for dist/index.html...');
+
+	try {
+		runGenerateEmbed();
+		console.log('📦 Run "npm run publish" to push dist/, docs/, and wordpress-embed.html.');
+	} catch (error) {
+		console.error(`❌ ${error.message}`);
+		process.exit(1);
+	}
+}
+
+const isMain = process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1];
+if (isMain) {
+	main();
+}
