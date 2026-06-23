@@ -46,7 +46,7 @@
 	const Y_TICK_CEILING = Math.max(views.cost.yMax, views.earnings.yMax);
 
 	const MOBILE_BREAKPOINT = 768;
-	const DESKTOP_MARGIN = { top: 20, right: 28, bottom: 52, left: 76 };
+	const DESKTOP_MARGIN = { top: 20, right: 28, bottom: 60, left: 76 };
 	const MOBILE_MARGIN = { top: 16, right: 30, bottom: 48, left: 70 };
 
 	
@@ -395,7 +395,7 @@
 
 			<text
 				x={layout.innerW / 2}
-				y={layout.innerH + 42}
+				y={layout.innerH + chartMargin.bottom - 5}
 				text-anchor="middle"
 				class="axis-title"
 				opacity={1 - frame.yLabelMix}
