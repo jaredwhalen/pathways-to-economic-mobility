@@ -10,6 +10,8 @@
 				? assetUrl('/images/problem-campus.webp')
 				: node.id === 'community'
 					? assetUrl('/images/community.webp')
+					: node.id === 'economy'
+						? assetUrl('/images/economy.webp')
 					: assetUrl('/images/public-agenda-engagement.webp')
 	}));
 </script>
