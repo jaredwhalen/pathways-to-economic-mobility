@@ -1,4 +1,0 @@
-import{a as i,f as c,c as m}from"../chunks/DJjPatY2.js";import{f as p,E as f,t as y,x as h,y as _,v,z as b,aN as g,A as z}from"../chunks/DikabPdW.js";import{B as E,i as P}from"../chunks/D6naSegO.js";import{h as S,s as d,a as T}from"../chunks/4Yg9WaYN.js";function j(e,o,...n){var a=new E(e);p(()=>{const t=o()??null;a.ensure(t,t&&(r=>t(r,...n)))},f)}const x=!0,B=Object.freeze(Object.defineProperty({__proto__:null,prerender:x},Symbol.toStringTag,{value:"Module"})),s={document:{mode:"inline"},layout:{mode:"full",horizontalPadding:"0"}};var A=c('<div class="layout-root svelte-12qhfyh"><!></div>');function F(e,o){y(o,!0);const n=`
-		--layout-max-width: none;
-		--layout-padding-inline: ${s.layout.horizontalPadding};
-	`;var a=A();S("12qhfyh",r=>{var l=m(),u=v(l);P(u,N=>{}),i(r,l)});var t=b(a);j(t,()=>o.children??g),z(a),h(()=>{d(a,"data-layout",s.layout.mode),d(a,"data-document",s.document.mode),T(a,n)}),i(e,a),_()}export{F as component,B as universal};
