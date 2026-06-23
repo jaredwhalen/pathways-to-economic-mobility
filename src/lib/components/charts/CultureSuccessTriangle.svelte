@@ -60,7 +60,19 @@
 		display: block;
 		width: 100%;
 		height: 100%;
+		max-width: 100%;
 		overflow: visible;
+	}
+
+	@media (max-width: 768px) {
+		.culture-triangle {
+			align-items: stretch;
+			justify-content: stretch;
+		}
+
+		.culture-triangle :global(.label) {
+			font-size: clamp(12px, 3.4vw, 16px);
+		}
 	}
 
 	.culture-triangle :global(.triangle-outline) {

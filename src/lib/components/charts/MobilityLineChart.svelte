@@ -45,6 +45,10 @@
 
 	const Y_TICK_CEILING = Math.max(views.cost.yMax, views.earnings.yMax);
 
+	const MOBILE_BREAKPOINT = 768;
+	const DESKTOP_MARGIN = { top: 20, right: 28, bottom: 52, left: 76 };
+	const MOBILE_MARGIN = { top: 16, right: 30, bottom: 48, left: 70 };
+
 	
 
 	let frame = $state({
@@ -283,20 +287,25 @@
 		return () => observer.disconnect();
 	});
 
+	let isDesktop = $derived(stageSize.width >= MOBILE_BREAKPOINT);
+
+	let chartMargin = $derived(isDesktop ? DESKTOP_MARGIN : MOBILE_MARGIN);
+
 	let chartViewport = $derived.by(() => {
-		const { width, height, margin } = CHART;
 		const { width: stageW, height: stageH } = stageSize;
 
 		if (stageW <= 0 || stageH <= 0) {
-			return { width, height, margin };
+			return { width: CHART.width, height: CHART.height, margin: DESKTOP_MARGIN };
 		}
 
 		return {
-			width,
-			height: Math.round(width * (stageH / stageW)),
-			margin
+			width: Math.round(stageW),
+			height: Math.round(stageH),
+			margin: chartMargin
 		};
 	});
+
+	let dotRadius = $derived(isDesktop ? 4 : 3.5);
 
 	let scaleConfig = $derived({
 		yearExtent: [frame.yearMin, frame.yearMax],
@@ -459,7 +468,7 @@
 						<circle
 							cx={dot.cx}
 							cy={dot.cy}
-							r={4}
+							r={dotRadius}
 							class="series-dot"
 							fill={s.color}
 							opacity={frame.dotsOpacity}
@@ -504,7 +513,7 @@
 	}
 
 	.legend-title {
-		margin: 0 0 0.5rem;
+		margin: 1rem 0 0.5rem;
 		text-align: center;
 		font-size: clamp(0.9375rem, 2vw, 1.125rem);
 		transition: opacity 280ms ease-in-out;
@@ -542,12 +551,24 @@
 		transition: opacity 0.15s linear;
 	}
 
+	.mobility-chart :global(.chart-svg .grid-line) {
+		stroke-width: 1;
+	}
+
+	.mobility-chart :global(.chart-svg .series-line) {
+		stroke-width: 2;
+	}
+
+	.mobility-chart :global(.chart-svg .series-dot) {
+		stroke-width: 1.25;
+	}
+
 	.mobility-chart :global(.chart-svg .axis-label) {
-		font-size: 15px;
+		font-size: 12px;
 	}
 
 	.mobility-chart :global(.chart-svg .axis-title) {
-		font-size: 16px;
+		font-size: 13px;
 	}
 
 	@media (min-width: 540px) {
@@ -567,12 +588,24 @@
 			gap: 0.5rem;
 		}
 
+		.mobility-chart :global(.chart-svg .grid-line) {
+			stroke-width: 1;
+		}
+
+		.mobility-chart :global(.chart-svg .series-line) {
+			stroke-width: 2.5;
+		}
+
+		.mobility-chart :global(.chart-svg .series-dot) {
+			stroke-width: 1.5;
+		}
+
 		.mobility-chart :global(.chart-svg .axis-label) {
-			font-size: 13px;
+			font-size: 15px;
 		}
 
 		.mobility-chart :global(.chart-svg .axis-title) {
-			font-size: 14px;
+			font-size: 16px;
 		}
 	}
 </style>

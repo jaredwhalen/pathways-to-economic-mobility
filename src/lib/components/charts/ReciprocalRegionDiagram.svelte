@@ -162,6 +162,7 @@
 	.region-diagram :global(.node-label) {
 		font-family: var(--font-body);
 		font-weight: var(--font-weight-regular);
+		font-size: 26px;
 		fill: var(--color-navy);
 		stroke: var(--color-off-white);
 		stroke-width: 5px;

@@ -1,23 +1,24 @@
 <script>
-	import PublicOpinionChart from '$lib/components/PublicOpinionChart.svelte';
-	import CompletionAlignVisual from '$lib/components/slides/completion/CompletionAlignVisual.svelte';
-	import { getSlideIndex } from '$lib/data/copy.js';
-	import { formatSlideParagraph, parseAlignSlide } from '$lib/utils/parseSlideText.js';
+	import PublicOpinionChart from "$lib/components/PublicOpinionChart.svelte";
+	import CompletionAlignVisual from "$lib/components/slides/completion/CompletionAlignVisual.svelte";
+	import { getSlideIndex } from "$lib/data/copy.js";
+	import {
+		formatSlideParagraph,
+		parseAlignSlide,
+	} from "$lib/utils/parseSlideText.js";
 
 	const FINDING_ACCENTS = {
-		'open-doors': 'var(--finding-01)',
-		completion: 'var(--finding-02)',
-		'regional-reciprocity': 'var(--finding-03)',
-		'culture-of-success': 'var(--finding-04)'
+		"open-doors": "var(--finding-01)",
+		completion: "var(--finding-02)",
+		"regional-reciprocity": "var(--finding-03)",
+		"culture-of-success": "var(--finding-04)",
 	};
 
-	let {
-		slide,
-		isActive,
-		activeIndex = 0
-	} = $props();
+	let { slide, isActive, activeIndex = 0 } = $props();
 
-	let alignContent = $derived(slide.text ? parseAlignSlide(slide.text) : null);
+	let alignContent = $derived(
+		slide.text ? parseAlignSlide(slide.text) : null,
+	);
 
 	let paragraphs = $derived(
 		alignContent || !slide.text
@@ -26,24 +27,33 @@
 					.split(/\n\s*\n/)
 					.map((paragraph) => paragraph.trim())
 					.filter((paragraph) => paragraph.length > 0)
-					.map((paragraph) => formatSlideParagraph(paragraph))
+					.map((paragraph) => formatSlideParagraph(paragraph)),
 	);
 
 	let findingAccent = $derived(
-		slide.eyebrow ? (FINDING_ACCENTS[slide.id] ?? 'var(--color-teal)') : null
+		slide.eyebrow
+			? (FINDING_ACCENTS[slide.id] ?? "var(--color-teal)")
+			: null,
 	);
 
 	let alignPassed = $derived(
-		alignContent ? activeIndex > getSlideIndex(slide.id) : false
+		alignContent ? activeIndex > getSlideIndex(slide.id) : false,
 	);
 
 	function skipToToolkit(event) {
 		event.preventDefault();
-		document.getElementById('toolkit')?.scrollIntoView({ block: 'start', behavior: 'instant' });
+		document
+			.getElementById("toolkit")
+			?.scrollIntoView({ block: "start", behavior: "instant" });
 	}
 </script>
 
-<section class="slide" class:active={isActive} class:slide-regional-opportunity={slide.id === 'regional-opportunity'} class:slide-public-agenda={slide.id === 'public-agenda'}>
+<section
+	class="slide"
+	class:active={isActive}
+	class:slide-regional-opportunity={slide.id === "regional-opportunity"}
+	class:slide-public-agenda={slide.id === "public-agenda"}
+>
 	<div
 		class="slide-content"
 		class:has-eyebrow={Boolean(slide.eyebrow)}
@@ -56,7 +66,9 @@
 			<p class="sr-only">{alignContent.srText}</p>
 			<div class="completion-body" aria-hidden="true">
 				{#if alignContent.textLead}
-					<p class="slide-text completion-lead">{@html formatSlideParagraph(alignContent.textLead)}</p>
+					<p class="slide-text completion-lead">
+						{@html formatSlideParagraph(alignContent.textLead)}
+					</p>
 				{/if}
 				<CompletionAlignVisual
 					phrases={alignContent.alignPhrases}
@@ -64,7 +76,9 @@
 					passed={alignPassed}
 				/>
 				{#if alignContent.textTail}
-					<p class="slide-text completion-tail">{@html formatSlideParagraph(alignContent.textTail)}</p>
+					<p class="slide-text completion-tail">
+						{@html formatSlideParagraph(alignContent.textTail)}
+					</p>
 				{/if}
 			</div>
 		{:else}
@@ -75,7 +89,7 @@
 		{#if slide.showChart}
 			<PublicOpinionChart active={isActive} />
 		{/if}
-		{#if slide.id === 'opening' && isActive}
+		{#if slide.id === "opening" && isActive}
 			<a class="skip-to-toolkit" href="#toolkit" onclick={skipToToolkit}>
 				Skip intro
 				<span class="skip-arrow" aria-hidden="true"></span>
@@ -110,11 +124,18 @@
 		font-family: var(--font-body);
 		background: transparent;
 		border: 1px solid var(--slide-surface-border-inner, var(--color-teal));
-		box-shadow: var(--slide-surface-shadow, 0 2px 20px rgba(3, 31, 67, 0.08));
+		box-shadow: var(
+			--slide-surface-shadow,
+			0 2px 20px rgba(3, 31, 67, 0.08)
+		);
 		border-radius: 2px;
 		pointer-events: auto;
 		opacity: 0.5;
 		transition: opacity 400ms ease;
+
+		@media (max-width: 768px) {
+			padding: 0.75rem 1rem;
+		}
 	}
 
 	.slide.active .slide-content {
@@ -122,7 +143,7 @@
 	}
 
 	.slide-content::before {
-		content: '';
+		content: "";
 		position: absolute;
 		inset: 0;
 		z-index: -1;
@@ -134,16 +155,20 @@
 	}
 
 	.slide-content::after {
-		content: '';
+		content: "";
 		position: absolute;
 		inset: calc(-1 * var(--slide-surface-border-gap, 5px));
-		border: 1px solid var(--slide-surface-border-outer, var(--color-teal-light));
+		border: 1px solid
+			var(--slide-surface-border-outer, var(--color-teal-light));
 		border-radius: calc(2px + var(--slide-surface-border-gap, 5px));
 		pointer-events: none;
 	}
 
 	.slide-content.has-eyebrow {
-		--slide-surface-border-inner: var(--slide-eyebrow-accent, var(--color-teal));
+		--slide-surface-border-inner: var(
+			--slide-eyebrow-accent,
+			var(--color-teal)
+		);
 	}
 
 	.slide-eyebrow {

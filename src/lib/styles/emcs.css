@@ -194,13 +194,11 @@
 
 .emcs-scroll .chart-svg .axis-label {
 	font-family: var(--font-body);
-	font-size: 11px;
 	fill: var(--color-navy);
 }
 
 .emcs-scroll .chart-svg .axis-title {
 	font-family: var(--font-display);
-	font-size: 12px;
 	font-weight: var(--font-weight-regular);
 	fill: var(--color-teal);
 }
@@ -220,5 +218,18 @@
 @media (max-width: 768px) {
 	.emcs-scroll {
 		--content-padding: 24px;
+		--diagram-padding-circle: 2.75rem 0.75rem 1rem;
+		--diagram-padding-triangle: 2.75rem 0.75rem 1rem;
+	}
+
+	.emcs-scroll .chart-source {
+		font-size: 0.75rem;
+	}
+}
+
+@media (max-width: 480px) {
+	.emcs-scroll {
+		--diagram-padding-circle: 2.5rem 0.5rem 0.75rem;
+		--diagram-padding-triangle: 2.5rem 0.5rem 0.75rem;
 	}
 }

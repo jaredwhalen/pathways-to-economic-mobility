@@ -1,7 +1,7 @@
 <script>
 	import { assetUrl } from '$lib/utils/assetUrl.js';
 
-	let { src, position = 'center center' } = $props();
+	let { src, position = 'center center', mobilePosition } = $props();
 
 	const photoUrl = $derived(assetUrl(src));
 </script>
@@ -9,8 +9,10 @@
 <div class="background-photo" role="presentation">
 	<div
 		class="background-photo-layer"
+		class:has-mobile-position={Boolean(mobilePosition)}
 		style:--photo-url={`url('${photoUrl}')`}
 		style:--photo-position={position}
+		style:--photo-position-mobile={mobilePosition}
 	></div>
 	<div class="background-photo-overlay" aria-hidden="true"></div>
 </div>
@@ -53,5 +55,11 @@
 				rgba(3, 31, 67, 0.82) 100%
 			);
 		pointer-events: none;
+	}
+
+	@media (max-width: 768px) {
+		.background-photo-layer.has-mobile-position {
+			background-position: var(--photo-position-mobile);
+		}
 	}
 </style>
