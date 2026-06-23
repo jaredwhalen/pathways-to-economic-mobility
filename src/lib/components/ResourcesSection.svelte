@@ -1,19 +1,28 @@
 <script>
-	import { resources, getResourceUrl } from '$lib/data/resources.js';
-	import { resourcesIntro } from '$lib/data/copy.js';
+	import { resources, resourcesIntro, getResourceUrl } from '$lib/data/copy.js';
 	import { formatSlideParagraph } from '$lib/utils/parseSlideText.js';
 	import { revealOnScroll } from '$lib/actions/revealOnScroll.js';
 	import { assetUrl } from '$lib/utils/assetUrl.js';
 	import { dev } from '$app/environment';
 
-	let introHtml = $derived(formatSlideParagraph(resourcesIntro));
+	let introParagraphs = $derived(
+		resourcesIntro
+			.split(/\n\s*\n/)
+			.map((paragraph) => paragraph.trim())
+			.filter((paragraph) => paragraph.length > 0)
+			.map((paragraph) => formatSlideParagraph(paragraph))
+	);
 </script>
 
 <section id="toolkit" class="resources-section" aria-labelledby="resources-heading">
 	<div class="resources-inner emcs-content">
 		<header class="resources-header" use:revealOnScroll>
 			<h2 id="resources-heading" class="resources-heading">Toolkit &amp; resources</h2>
-			<p class="resources-intro">{@html introHtml}</p>
+			<div class="resources-intro-copy">
+				{#each introParagraphs as paragraph}
+					<p class="resources-intro">{@html paragraph}</p>
+				{/each}
+			</div>
 		</header>
 
 		<ul class="resources-grid">
@@ -31,7 +40,6 @@
 						<div class="resource-body">
 							<h3 class="resource-title">{resource.title}</h3>
 							<p class="resource-description">{resource.description}</p>
-							<span class="resource-link-label">View resource</span>
 						</div>
 					</a>
 				</li>
@@ -59,8 +67,7 @@
 	.resources-header {
 		display: flex;
 		flex-direction: column;
-		gap: 1rem;
-		max-width: 42rem;
+		gap: 1.25rem;
 		opacity: 0;
 		transform: translateY(1.25rem);
 		transition:
@@ -76,15 +83,34 @@
 	.resources-heading {
 		margin: 0;
 		font-family: var(--font-display);
-		font-size: clamp(1.75rem, 4vw, 2.5rem);
+		font-size: clamp(2.25rem, 3.5vw, 3.25rem);
 		font-weight: var(--font-weight-regular);
-		line-height: 1.2;
-		color: var(--color-navy);
+		line-height: 1.15;
+		color: var(--color-near-black);
+	}
+
+	.resources-intro-copy {
+		display: flex;
+		flex-direction: column;
+		gap: 0;
+	}
+
+	.resources-intro {
+		margin: 0 0 var(--text-body-margin-bottom);
+		font-family: var(--font-body);
+		font-weight: var(--font-weight-regular);
+		font-size: var(--text-body-size);
+		line-height: var(--text-body-leading);
+		color: var(--text-body-color);
+	}
+
+	.resources-intro:last-child {
+		margin-bottom: 0;
 	}
 
 	.resources-grid {
 		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
+		grid-template-columns: repeat(2, minmax(0, 1fr));
 		gap: clamp(1.25rem, 2.5vw, 1.75rem);
 		margin: 0;
 		padding: 0;
@@ -164,29 +190,32 @@
 
 	.resource-title {
 		margin: 0;
+		align-self: flex-start;
 		font-family: var(--font-display);
-		font-size: clamp(1.0625rem, 2vw, 1.2rem);
-		font-weight: var(--font-weight-regular);
-		line-height: 1.25;
+		font-size: clamp(1.4375rem, 0.4746835443vw + 1.2096518987rem, 1.625rem);
+		font-weight: 500;
+		line-height: clamp(1.75rem, 1.2658227848vw + 1.1424050633rem, 2.25rem);
 		color: var(--color-navy);
+		background-image: linear-gradient(var(--color-near-black), var(--color-near-black));
+		background-position: 0 100%;
+		background-repeat: no-repeat;
+		background-size: 0% 2px;
+		transition: background-size 280ms ease;
+	}
+
+	.resource-card:hover .resource-title,
+	.resource-card:focus-visible .resource-title {
+		background-size: 100% 2px;
 	}
 
 	.resource-description {
 		margin: 0;
 		flex: 1;
-		font-size: clamp(0.9375rem, 1.6vw, 1rem);
-		line-height: 1.45;
-		color: var(--color-navy);
-		opacity: 0.88;
-	}
-
-	.resource-link-label {
-		margin-top: 0.25rem;
-		font-size: 0.75rem;
+		font-family: var(--font-body);
 		font-weight: var(--font-weight-regular);
-		letter-spacing: 0.06em;
-		text-transform: uppercase;
-		color: var(--color-teal);
+		font-size: clamp(0.9375rem, 1.6vw, 1.0625rem);
+		line-height: 1.45;
+		color: var(--text-body-color);
 	}
 
 	@media (prefers-reduced-motion: reduce) {
@@ -197,6 +226,15 @@
 			transition: none;
 		}
 
+		.resource-title {
+			transition: none;
+		}
+
+		.resource-card:hover .resource-title,
+		.resource-card:focus-visible .resource-title {
+			background-size: 100% 2px;
+		}
+
 		.resource-media img {
 			transition: none;
 		}
@@ -204,12 +242,6 @@
 		.resource-card:hover .resource-media img,
 		.resource-card:focus-visible .resource-media img {
 			transform: none;
-		}
-	}
-
-	@media (max-width: 960px) {
-		.resources-grid {
-			grid-template-columns: repeat(2, minmax(0, 1fr));
 		}
 	}
 

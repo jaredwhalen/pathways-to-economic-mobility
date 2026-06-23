@@ -2,6 +2,7 @@ import fs from "fs";
 import archieml from "archieml";
 import docs from "../google.config.js";
 import { camelCase } from 'change-case';
+import { normalizeCopyStrings } from '../src/lib/utils/normalizeCopyText.js';
 const CWD = process.cwd();
 
 let objectKeysToLowerCase = function (input) {
@@ -38,8 +39,8 @@ const fetchGoogle = async ({ id, gid }) => {
 		if (gid) return text;
 
 		const parsed = archieml.load(text);
-		const str = JSON.stringify(objectKeysToLowerCase(parsed));
-		return str;
+		const normalized = normalizeCopyStrings(objectKeysToLowerCase(parsed));
+		return JSON.stringify(normalized);
 	} catch (err) {
 		throw new Error(err);
 	}

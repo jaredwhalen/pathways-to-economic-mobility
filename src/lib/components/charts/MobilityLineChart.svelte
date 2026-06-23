@@ -265,9 +265,38 @@
 		};
 	});
 
-	const { width, height, margin } = CHART;
-	const innerW = width - margin.left - margin.right;
-	const innerH = height - margin.top - margin.bottom;
+	let showCostLegend = $derived(frame.yLabelMix < 0.5);
+
+	let chartStage = $state(null);
+	let stageSize = $state({ width: 0, height: 0 });
+
+	$effect(() => {
+		const el = chartStage;
+		if (!el) return;
+
+		const observer = new ResizeObserver(([entry]) => {
+			const { width, height } = entry.contentRect;
+			stageSize = { width, height };
+		});
+
+		observer.observe(el);
+		return () => observer.disconnect();
+	});
+
+	let chartViewport = $derived.by(() => {
+		const { width, height, margin } = CHART;
+		const { width: stageW, height: stageH } = stageSize;
+
+		if (stageW <= 0 || stageH <= 0) {
+			return { width, height, margin };
+		}
+
+		return {
+			width,
+			height: Math.round(width * (stageH / stageW)),
+			margin
+		};
+	});
 
 	let scaleConfig = $derived({
 		yearExtent: [frame.yearMin, frame.yearMax],
@@ -277,18 +306,20 @@
 	let xTicks = $derived(yearTicks(frame.yearMin, frame.yearMax));
 	let yTicks = $derived(valueTicks(Y_TICK_STEP, Y_TICK_CEILING, frame.yMax));
 
-	let layout = $derived(buildLinePath(scaleConfig, [{ year: frame.yearMin, value: 0 }]));
+	let layout = $derived(
+		buildLinePath(scaleConfig, [{ year: frame.yearMin, value: 0 }], chartViewport)
+	);
 
 	let costSeries = $derived(
 		collegeCost.series.map((s) => {
-			const built = buildLinePath(scaleConfig, s.points);
+			const built = buildLinePath(scaleConfig, s.points, chartViewport);
 			return { ...s, ...built };
 		})
 	);
 
 	let earningsSeries = $derived(
 		postCollegeEarnings.series.map((s) => {
-			const built = buildLinePath(scaleConfig, s.points);
+			const built = buildLinePath(scaleConfig, s.points, chartViewport);
 			const dots = (s.observed ?? []).map((p) => ({
 				...p,
 				cx: built.x(p.year),
@@ -297,55 +328,65 @@
 			return { ...s, ...built, dots };
 		})
 	);
-
-	let showCostLegend = $derived(frame.yLabelMix < 0.5);
 </script>
 
 <div class="mobility-chart">
 	<div class="legend-host">
 		<p class="legend-title" style:opacity={frame.legendOpacity}>Family income</p>
-		<div class="legend-panel">
-			<ul class="legend" class:is-visible={showCostLegend} style:opacity={frame.legendOpacity}>
-				{#each costSeries as s (s.id)}
-					<li class="legend-item">
-						<svg class="legend-swatch" width="28" height="10" aria-hidden="true">
-							<line x1="0" y1="5" x2="28" y2="5" stroke={s.color} stroke-width="3" />
-						</svg>
-						<span class="legend-label">{s.id}</span>
-					</li>
-				{/each}
-			</ul>
-			<ul class="legend" class:is-visible={!showCostLegend} style:opacity={frame.legendOpacity}>
-				{#each earningsSeries as s (s.id)}
-					<li class="legend-item">
-						<svg class="legend-swatch" width="28" height="10" aria-hidden="true">
-							<line x1="0" y1="5" x2="28" y2="5" stroke={s.color} stroke-width="3" />
-						</svg>
-						<span class="legend-label">{s.id}</span>
-					</li>
-				{/each}
-			</ul>
+		<div class="legend-panel" style:opacity={frame.legendOpacity}>
+			{#if showCostLegend}
+				<ul class="legend">
+					{#each costSeries as s (s.id)}
+						<li class="legend-item">
+							<svg class="legend-swatch" width="28" height="10" aria-hidden="true">
+								<line x1="0" y1="5" x2="28" y2="5" stroke={s.color} stroke-width="3" />
+							</svg>
+							<span class="legend-label">{s.id}</span>
+						</li>
+					{/each}
+				</ul>
+			{:else}
+				<ul class="legend">
+					{#each earningsSeries as s (s.id)}
+						<li class="legend-item">
+							<svg class="legend-swatch" width="28" height="10" aria-hidden="true">
+								<line x1="0" y1="5" x2="28" y2="5" stroke={s.color} stroke-width="3" />
+							</svg>
+							<span class="legend-label">{s.id}</span>
+						</li>
+					{/each}
+				</ul>
+			{/if}
 		</div>
 	</div>
 
-	<svg class="chart-svg" viewBox="0 0 {width} {height}" role="img">
-		<g transform="translate({margin.left}, {margin.top})" opacity={frame.chromeOpacity}>
+	<div class="chart-stage" bind:this={chartStage}>
+		<svg
+			class="chart-svg"
+			viewBox="0 0 {chartViewport.width} {chartViewport.height}"
+			preserveAspectRatio="xMidYMid meet"
+			role="img"
+		>
+		<g
+			transform="translate({chartViewport.margin.left}, {chartViewport.margin.top})"
+			opacity={frame.chromeOpacity}
+		>
 			{#each yTicks as tick}
 				<g class="y-tick" transform="translate(0, {layout.y(tick)})">
-					<line x1={0} x2={innerW} class="grid-line" />
+					<line x1={0} x2={layout.innerW} class="grid-line" />
 					<text x={-10} y={4} text-anchor="end" class="axis-label">{formatDollars(tick)}</text>
 				</g>
 			{/each}
 
 			{#each xTicks as tick}
-				<g class="x-tick" transform="translate({layout.x(tick)}, {innerH})">
+				<g class="x-tick" transform="translate({layout.x(tick)}, {layout.innerH})">
 					<text y={22} text-anchor="middle" class="axis-label">{Math.round(tick)}</text>
 				</g>
 			{/each}
 
 			<text
-				x={innerW / 2}
-				y={innerH + 42}
+				x={layout.innerW / 2}
+				y={layout.innerH + 42}
 				text-anchor="middle"
 				class="axis-title"
 				opacity={1 - frame.yLabelMix}
@@ -353,8 +394,8 @@
 				{views.cost.xLabel}
 			</text>
 			<text
-				x={innerW / 2}
-				y={innerH + 42}
+				x={layout.innerW / 2}
+				y={layout.innerH + 42}
 				text-anchor="middle"
 				class="axis-title"
 				opacity={frame.yLabelMix}
@@ -364,7 +405,7 @@
 
 			<text
 				transform="rotate(-90)"
-				x={-innerH / 2}
+				x={-layout.innerH / 2}
 				y={-52}
 				text-anchor="middle"
 				class="axis-title"
@@ -374,7 +415,7 @@
 			</text>
 			<text
 				transform="rotate(-90)"
-				x={-innerH / 2}
+				x={-layout.innerH / 2}
 				y={-52}
 				text-anchor="middle"
 				class="axis-title"
@@ -427,7 +468,8 @@
 				</g>
 			{/each}
 		</g>
-	</svg>
+		</svg>
+	</div>
 
 	<p class="chart-source" style:opacity={frame.chromeOpacity}>{SOURCE}</p>
 </div>
@@ -435,73 +477,102 @@
 <style>
 	.mobility-chart {
 		width: 100%;
+		max-width: 100%;
+		overflow-x: clip;
 		height: 100dvh;
 		min-height: 100dvh;
-		display: flex;
-		flex-direction: column;
+		display: grid;
+		grid-template-rows: auto minmax(0, 1fr) auto;
 		background: var(--color-white);
 	}
 
-	.chart-svg {
-		flex: 1 1 auto;
-		width: 100%;
+	.chart-stage {
+		min-width: 0;
 		min-height: 0;
+		width: 100%;
+		height: 100%;
+	}
+
+	.chart-svg {
+		width: 100%;
+		height: 100%;
 		display: block;
 	}
 
 	.legend-host {
-		flex-shrink: 0;
-		display: flex;
-		flex-direction: column;
-		gap: 0.625rem;
-		padding: 1.25rem 1.5rem 1rem;
+		padding: clamp(0.75rem, 2vw, 1.25rem) clamp(1rem, 3vw, 1.5rem) clamp(0.5rem, 1.5vw, 0.75rem);
 	}
 
 	.legend-title {
-		margin: 0;
+		margin: 0 0 0.5rem;
 		text-align: center;
-		font-size: 1rem;
+		font-size: clamp(0.9375rem, 2vw, 1.125rem);
 		transition: opacity 280ms ease-in-out;
 	}
 
 	.legend-panel {
-		position: relative;
-		min-height: 2.25rem;
+		transition: opacity 280ms ease-in-out;
 	}
 
 	.legend {
 		list-style: none;
-		margin: 0;
+		margin: 0 auto;
 		padding: 0;
-		display: flex;
-		flex-wrap: wrap;
-		justify-content: center;
-		align-items: center;
-		gap: 1rem 1.75rem;
-		position: absolute;
-		left: 50%;
-		top: 0;
-		transform: translateX(-50%);
-		width: max-content;
-		max-width: calc(100% - 3rem);
-		opacity: 0;
-		transition: opacity 280ms ease-in-out;
-		pointer-events: none;
-		visibility: hidden;
-	}
-
-	.legend.is-visible {
-		visibility: visible;
-		pointer-events: auto;
+		width: 100%;
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 0.375rem 0.75rem;
+		justify-items: start;
 	}
 
 	.legend-item {
-		gap: 0.5rem;
-		font-size: 0.9375rem;
+		display: flex;
+		align-items: center;
+		gap: 0.375rem;
+		font-size: clamp(0.8125rem, 2.2vw, 0.9375rem);
+		min-width: 0;
+	}
+
+	.legend-label {
+		white-space: nowrap;
 	}
 
 	.chart-source {
-		padding: 0 1.25rem 1rem;
+		padding: 0.5rem clamp(1rem, 3vw, 1.25rem) clamp(0.75rem, 2vw, 1rem);
 		transition: opacity 0.15s linear;
+	}
+
+	.mobility-chart :global(.chart-svg .axis-label) {
+		font-size: 15px;
+	}
+
+	.mobility-chart :global(.chart-svg .axis-title) {
+		font-size: 16px;
+	}
+
+	@media (min-width: 540px) {
+		.legend {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+		}
+	}
+
+	@media (min-width: 768px) {
+		.legend {
+			grid-template-columns: repeat(5, minmax(0, 1fr));
+			gap: 0.5rem 1rem;
+			justify-items: center;
+		}
+
+		.legend-item {
+			gap: 0.5rem;
+		}
+
+		.mobility-chart :global(.chart-svg .axis-label) {
+			font-size: 13px;
+		}
+
+		.mobility-chart :global(.chart-svg .axis-title) {
+			font-size: 14px;
+		}
 	}
 </style>

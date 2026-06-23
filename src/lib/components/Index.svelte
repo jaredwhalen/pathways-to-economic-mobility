@@ -38,16 +38,20 @@
 		</div>
 		<div slot="foreground">
 			{#each slides as slide (slide.id)}
-				<Slide {slide} isActive={activeSlideId === slide.id} />
+				<Slide
+					{slide}
+					activeIndex={index}
+					isActive={activeSlideId === slide.id}
+				/>
 			{/each}
 		</div>
 	</Scroller>
 
 	<ResourcesSection />
 
-	{#if dev}
+	<!-- {#if dev}
 		<ScrollerDebug {index} {count} {progress} {offset} {visible} />
-	{/if}
+	{/if} -->
 </div>
 
 <style>

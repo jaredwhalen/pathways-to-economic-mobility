@@ -59,42 +59,46 @@
 
 <style>
 	.opinion-chart {
-		margin: 1.25rem 0 0;
-		padding: 1.25rem 0 0;
+		margin: 1rem 0 0;
+		padding: 1rem 0 0;
 		border-top: 1px solid var(--color-teal-light);
 	}
 
 	.chart-question {
-		margin: 0 0 1rem;
-		font-family: var(--font-body);
-		font-size: 0.8125rem;
+		margin: 0 0 0.875rem;
+		font-family: var(--font-display);
+		font-size: clamp(1.0625rem, 2.8vw, 1.3125rem);
 		font-weight: var(--font-weight-regular);
-		line-height: 1.45;
-		color: var(--color-teal-dark);
+		line-height: 1.25;
+		color: var(--color-teal);
 	}
 
 	.bars {
 		display: flex;
 		flex-direction: column;
-		gap: 0.875rem;
-	}
-
-	.bar-row {
-		display: grid;
-		grid-template-columns: 1fr minmax(0, 2fr) auto;
-		align-items: center;
 		gap: 0.625rem;
 	}
 
+	.bar-row {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
 	.bar-label {
+		flex: 0 1 auto;
+		max-width: 14rem;
 		font-family: var(--font-body);
-		font-size: 0.75rem;
-		line-height: 1.3;
-		color: var(--color-navy);
+		font-size: clamp(0.875rem, 2.2vw, 1rem);
+		font-weight: var(--font-weight-light);
+		line-height: 1.2;
+		color: var(--text-body-color);
 	}
 
 	.bar-track {
-		height: 1.125rem;
+		flex: 1 1 0;
+		min-width: 3rem;
+		height: 2rem;
 	}
 
 	.bar-fill {
@@ -111,27 +115,28 @@
 	}
 
 	.bar-value {
-		font-family: var(--font-body);
-		font-size: 0.8125rem;
-		font-weight: var(--font-weight-regular);
+		flex: 0 0 auto;
+		font-family: var(--font-display);
+		font-size: clamp(0.9375rem, 2.4vw, 1.0625rem);
+		font-weight: var(--font-weight-bold);
 		font-variant-numeric: tabular-nums;
 		color: var(--color-teal-dark);
-		min-width: 2.25rem;
 		text-align: right;
 	}
 
-	.chart-source {
-		margin: 1rem 0 0;
+	.opinion-chart .chart-source {
+		margin: 0.75rem 0 0;
+		font-size: clamp(0.6875rem, 2vw, 0.75rem);
+		line-height: 1.3;
 	}
 
 	@media (max-width: 480px) {
 		.bar-row {
-			grid-template-columns: 1fr;
 			gap: 0.375rem;
 		}
 
-		.bar-value {
-			text-align: left;
+		.bar-label {
+			max-width: 11rem;
 		}
 	}
 </style>

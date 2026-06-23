@@ -3,12 +3,12 @@ import { scaleLinear } from 'd3-scale';
 
 export const CHART = {
 	width: 800,
-	height: 480,
-	margin: { top: 16, right: 24, bottom: 48, left: 72 }
+	height: 520,
+	margin: { top: 20, right: 28, bottom: 52, left: 76 }
 };
 
-export function buildLinePath(config, points) {
-	const { width, height, margin } = CHART;
+export function buildLinePath(config, points, chart = CHART) {
+	const { width, height, margin } = chart;
 	const innerW = width - margin.left - margin.right;
 	const innerH = height - margin.top - margin.bottom;
 

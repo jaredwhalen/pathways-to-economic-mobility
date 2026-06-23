@@ -18,8 +18,9 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	{/if}
 
+	<meta charset="utf-8" />
+
 	{#if isStandalone}
-		<meta charset="utf-8" />
 		<link rel="icon" href={favicon} />
 		<title>{project.meta.title}</title>
 		<meta name="description" content={project.meta.description} />

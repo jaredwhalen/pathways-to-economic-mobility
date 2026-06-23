@@ -31,12 +31,13 @@
 	--color-yellow: #f9cb6c;
 	--color-yellow-dark: #ce972a;
 	--color-green: #5bb785;
+	--color-green-dark: #2a6b4f;
 	--color-blue: #38aad6;
 	--color-purple: #b34cdb;
 
 	/* Finding accents */
 	--finding-01: var(--color-orange);
-	--finding-02: var(--color-green);
+	--finding-02: var(--color-green-dark);
 	--finding-03: var(--color-blue);
 	--finding-04: var(--color-purple);
 
