@@ -39,7 +39,7 @@
 
 	function skipToToolkit(event) {
 		event.preventDefault();
-		document.getElementById('toolkit')?.scrollIntoView({ block: 'start' });
+		document.getElementById('toolkit')?.scrollIntoView({ block: 'start', behavior: 'instant' });
 	}
 </script>
 
