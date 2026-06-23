@@ -528,8 +528,9 @@
 		margin: 0 auto;
 		padding: 0;
 		width: 100%;
-		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
 		gap: 0.375rem 0.75rem;
 		justify-items: start;
 	}
@@ -573,14 +574,17 @@
 
 	@media (min-width: 540px) {
 		.legend {
-			grid-template-columns: repeat(3, minmax(0, 1fr));
+			gap: 0.5rem 3rem;
+			display: flex;
 		}
 	}
 
 	@media (min-width: 768px) {
 		.legend {
-			grid-template-columns: repeat(5, minmax(0, 1fr));
-			gap: 0.5rem 1rem;
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: center;
+			gap: 0.5rem 3rem;
 			justify-items: center;
 		}
 
