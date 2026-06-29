@@ -31,7 +31,9 @@ export function getSlideById(id) {
 }
 
 export function getResourceUrl(path) {
-	return new URL(path, RESOURCE_SITE_BASE).href;
+	const url = new URL(path, RESOURCE_SITE_BASE);
+	url.hash = 'main-content';
+	return url.href;
 }
 
 export default copy;

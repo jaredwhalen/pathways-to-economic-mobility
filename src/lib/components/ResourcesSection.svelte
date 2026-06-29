@@ -15,7 +15,7 @@
 </script>
 
 <section id="toolkit" class="resources-section" aria-labelledby="resources-heading">
-	<div class="resources-inner emcs-content">
+	<div class="resources-inner">
 		<header class="resources-header" use:revealOnScroll>
 			<h2 id="resources-heading" class="resources-heading">Toolkit &amp; resources</h2>
 			<div class="resources-intro-copy">
@@ -59,6 +59,10 @@
 	}
 
 	.resources-inner {
+		width: 100%;
+		max-width: 1800px;
+		margin-inline: auto;
+		padding-inline: calc(3vw - 10px);
 		display: flex;
 		flex-direction: column;
 		gap: clamp(2rem, 5vw, 3rem);
@@ -110,7 +114,7 @@
 
 	.resources-grid {
 		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
+		grid-template-columns: 1fr;
 		gap: clamp(1.25rem, 2.5vw, 1.75rem);
 		margin: 0;
 		padding: 0;
@@ -245,9 +249,33 @@
 		}
 	}
 
-	@media (max-width: 560px) {
+	@media (max-width: 768px) {
+		.resources-inner {
+			padding-inline: 24px;
+		}
+	}
+
+	@media (min-width: 561px) {
 		.resources-grid {
-			grid-template-columns: 1fr;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+
+	@media (min-width: 768px) {
+		.resources-grid {
+			grid-template-columns: repeat(6, minmax(0, 1fr));
+		}
+
+		.resources-grid-item {
+			grid-column: span 2;
+		}
+
+		.resources-grid-item:nth-child(4) {
+			grid-column: 2 / span 2;
+		}
+
+		.resources-grid-item:nth-child(5) {
+			grid-column: 4 / span 2;
 		}
 	}
 </style>
